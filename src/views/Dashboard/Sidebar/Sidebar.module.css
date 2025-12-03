@@ -1,0 +1,181 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding-left: 10px;
+}
+
+.appName {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #6366f1;
+    /* var(--primary-color) */
+    letter-spacing: -0.5px;
+}
+
+.nav {
+    flex: 1;
+    width: 100%;
+    overflow-y: auto;
+    /* Scroll si el menú es muy largo */
+    padding-right: 5px;
+    /* Espacio para scrollbar */
+}
+
+/* Scrollbar fina para el menú */
+.nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.nav::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 4px;
+}
+
+.sectionTitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    margin-top: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Items del menú principal */
+.menuItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Para separar icono/texto de la flecha */
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #64748b;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+.menuItem:hover {
+    background-color: #f8fafc;
+    color: #334155;
+}
+
+.menuItemActive {
+    background-color: #e0e7ff;
+    color: #6366f1;
+    font-weight: 600;
+}
+
+.menuContent {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- ANIMACIÓN DE SUBMENÚS (ACORDEÓN) --- */
+.subMenuWrapper {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    opacity: 0;
+}
+
+.subMenuOpen {
+    max-height: 1000px;
+    /* Altura suficiente para contener los hijos */
+    opacity: 1;
+}
+
+.subMenuContainer {
+    padding-left: 12px;
+    /* Indentación visual */
+    position: relative;
+}
+
+/* Línea guía visual para la jerarquía */
+.subMenuContainer::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #f1f5f9;
+}
+
+/* Items de submenú */
+.subMenuItem {
+    padding: 8px 10px 8px 20px;
+    /* Padding izquierdo deja espacio para la línea */
+    cursor: pointer;
+    color: #64748b;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 8px;
+    transition: all 0.2s;
+    margin-top: 2px;
+    position: relative;
+}
+
+.subMenuItem:hover {
+    color: #334155;
+    background-color: #f8fafc;
+}
+
+.subMenuItemActive {
+    color: #6366f1;
+    font-weight: 600;
+    background-color: #eff6ff;
+}
+
+/* Indicador de activo (puntito) */
+.activeIndicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #6366f1;
+    position: absolute;
+    left: 0;
+    /* Sobre la línea guía */
+}
+
+/* Botón Logout */
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    color: #ef4444;
+    background-color: #fee2e2;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    width: 90%;
+    margin-top: auto;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+    background-color: #fecaca;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.15);
+}

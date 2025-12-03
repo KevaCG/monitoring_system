@@ -1,0 +1,43 @@
+/* Importamos Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* --- Actualizamos la paleta para que sea más sofisticada --- */
+  --primary-color: #6366f1;
+  /* Indigo vibrante */
+  --primary-hover: #4f46e5;
+  --secondary-color: #a855f7;
+  /* Púrpura */
+  --bg-color: #f8fafc;
+  /* Fondo ligeramente más frío */
+  --surface-color: #ffffff;
+  --text-main: #1e293b;
+  /* Gris oscuro azulado, más moderno que el negro puro */
+  --text-muted: #64748b;
+  /* Gris medio para subtítulos */
+  --input-bg: #f1f5f9;
+  /* Fondo de input muy sutil */
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* Aplicamos Poppins globalmente */
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ... resto del archivo body ... */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Un fondo sutil para darle profundidad */
+  background-image: radial-gradient(circle at center, #f1f5f9 0%, #e2e8f0 100%);
+}

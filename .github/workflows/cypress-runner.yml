@@ -1,0 +1,44 @@
+name: Ejecutar Cypress desde Dashboard
+
+on:
+  repository_dispatch:
+    types: [run-cypress]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar Dependencias
+        run: npm ci
+
+      # Definimos el comando según el botón que oprimiste en el Dashboard
+      - name: Determinar Comando
+        id: set-command
+        run: |
+          if [ "${{ github.event.client_payload.test_suite }}" == "Atomic" ]; then
+            echo "CMD=npx cypress run --spec 'cypress/e2e/atomic/**/*.feature'" >> $GITHUB_ENV
+          elif [ "${{ github.event.client_payload.test_suite }}" == "Credito" ]; then
+            # Ruta ajustada: parly -> credito -> fibotclientes.feature
+            echo "CMD=npx cypress run --spec 'cypress/e2e/parly/credito/fibotclientes.feature'" >> $GITHUB_ENV
+          elif [ "${{ github.event.client_payload.test_suite }}" == "Clave" ]; then
+            # Ruta ajustada: parly -> claveregistro -> claveregistro.feature
+            echo "CMD=npx cypress run --spec 'cypress/e2e/parly/claveregistro/claveregistro.feature'" >> $GITHUB_ENV
+          elif [ "${{ github.event.client_payload.test_suite }}" == "Operaciones" ]; then
+            # Ruta ajustada: parly -> operaciones -> operaciones.feature
+            echo "CMD=npx cypress run --spec 'cypress/e2e/parly/operaciones/operaciones.feature'" >> $GITHUB_ENV
+          elif [ "${{ github.event.client_payload.test_suite }}" == "GH" ]; then
+            # Ruta ajustada: parly -> gestionHumana -> gestionhumana.feature
+            echo "CMD=npx cypress run --spec 'cypress/e2e/parly/gestionHumana/gestionhumana.feature'" >> $GITHUB_ENV
+          else
+            echo "CMD=echo 'No se reconoció el test suite'" >> $GITHUB_ENV
+          fi
+
+      - name: Ejecutar Cypress
+        run: ${{ env.CMD }}
+        env:
+          # Estas claves se configuran en GitHub > Settings > Secrets and variables
+          CYPRESS_supabaseUrl: ${{ secrets.SUPABASE_URL }}
+          CYPRESS_supabaseKey: ${{ secrets.SUPABASE_KEY }}
