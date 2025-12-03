@@ -6,8 +6,6 @@ import { supabase } from '../../../lib/supabase';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-const COLORS = ['#1e293b', '#93c5fd', '#6366f1', '#22c55e', '#ef4444'];
-
 interface MainContentProps {
     filterContext: {
         type: 'global' | 'project' | 'client' | 'canal' | 'flow';
