@@ -5,6 +5,9 @@ import styles from './MainContent.module.css';
 import { supabase } from '../../../lib/supabase';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
+const COLORS = ['#1e293b', '#93c5fd', '#6366f1', '#22c55e', '#ef4444'];
+
 interface MainContentProps {
     filterContext: {
         type: 'global' | 'project' | 'client' | 'canal' | 'flow';
@@ -83,6 +86,7 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
         }));
         setChartData(visualChartData);
 
+        // --- Preparando datos para Bar y Pie ---
         const groupedBySystem: any = {};
         filtered.forEach((d: any) => {
             const systemName = d.sistema || 'Desconocido';
@@ -115,8 +119,6 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
     const exportToPDF = () => {
         const doc = new jsPDF();
         doc.setFontSize(18); doc.text(`Reporte - ${filterContext.value}`, 14, 20);
-
-        // @ts-ignore
         autoTable(doc, {
             startY: 35,
             head: [["ID", "Fecha", "Cliente", "Flujo", "Estado", "Duración"]],
@@ -189,6 +191,7 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
             </div>
 
             <div className={styles.bottomGrid}>
+
                 <div className={styles.chartContainer}>
                     <h3 className={styles.chartTitle}>Ejecuciones por Flujo</h3>
                     <ResponsiveContainer width="100%" height={200}>
@@ -227,6 +230,7 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
                     </div>
                 </div>
             </div>
+            {/* ---------------------------------------------------------------------- */}
 
             <div className={styles.filterBar}>
                 <div className={styles.filterGroup}>
