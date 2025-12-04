@@ -1,7 +1,7 @@
 Feature: Asistente virtual financiera comultrasan    
     
     Scenario: Validar que el chat en la plataforma web Financiera Comultrasan funcione correctamente
-        Given el usuario navega en la página web
+        Given el usuario navega en la página web de Fibot Clientes
         When hago clic en Fibot Asistente virtual
         And hago clic en el botón Si cuando me pregunta sobre tratamiento de datos
         And hago clic en la opción Solicitar crédito

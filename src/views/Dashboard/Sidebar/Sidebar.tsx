@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Folder, ChevronDown, ChevronRight, LogOut, MessageSquare, Briefcase, Zap, UserCheck } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,21 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
     const navigate = useNavigate();
 
+    const [userName, setUserName] = useState("Usuario");
     const [expandedItems, setExpandedItems] = useState<string[]>(['Parly', 'Comultrasan']);
+
+    useEffect(() => {
+        const getUserData = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const name = user.user_metadata?.username || user.email?.split('@')[0] || "Usuario";
+                setUserName(name.charAt(0).toUpperCase() + name.slice(1));
+            }
+        };
+        getUserData();
+    }, []);
+
+    const initial = userName.charAt(0).toUpperCase();
 
     const toggleExpand = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -30,8 +44,17 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
 
     return (
         <div className={styles.container}>
+
             <div className={styles.header}>
-                <h2 className={styles.appName}>MonitorApp</h2>
+                <div className={styles.userProfile}>
+                    <div className={styles.userAvatar}>
+                        {initial}
+                    </div>
+                    <div className={styles.userInfo}>
+                        <span className={styles.userName}>{userName}</span>
+                        <span className={styles.userRole}>Admin</span>
+                    </div>
+                </div>
             </div>
 
             <nav className={styles.nav}>
@@ -51,7 +74,6 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
                 <div>
                     <p className={styles.sectionTitle}>PROYECTOS</p>
 
-                    {/* === PROYECTO: ATOMIC === */}
                     <div
                         className={`${styles.menuItem} ${isActive('Atomic') ? styles.menuItemActive : ''}`}
                         onClick={() => onSelectFilter({ type: 'project', value: 'Atomic' })}
@@ -62,7 +84,6 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
                         </div>
                     </div>
 
-                    {/* === PROYECTO: PARLY (Con Jerarquía) === */}
                     <div>
                         <div
                             className={`${styles.menuItem} ${isActive('Parly') ? styles.menuItemActive : ''}`}
@@ -77,11 +98,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
                             </div>
                         </div>
 
-                        {/* NIVEL 2: CLIENTES */}
                         <div className={`${styles.subMenuWrapper} ${expandedItems.includes('Parly') ? styles.subMenuOpen : ''}`}>
                             <div className={styles.subMenuContainer}>
 
-                                {/* Cliente: Comultrasan */}
                                 <div>
                                     <div
                                         className={`${styles.subMenuItem} ${isActive('Comultrasan') ? styles.subMenuItemActive : ''}`}
@@ -97,11 +116,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
                                         </div>
                                     </div>
 
-                                    {/* NIVEL 3: CANALES */}
                                     <div className={`${styles.subMenuWrapper} ${expandedItems.includes('Comultrasan') ? styles.subMenuOpen : ''}`}>
                                         <div className={styles.subMenuContainer} style={{ borderLeft: '1px solid #e2e8f0', marginLeft: '12px' }}>
 
-                                            {/* Canal: Fibotclientes */}
                                             <div>
                                                 <div
                                                     className={`${styles.subMenuItem} ${isActive('Fibotclientes') ? styles.subMenuItemActive : ''}`}
@@ -116,24 +133,14 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
                                                     </div>
                                                 </div>
 
-                                                {/* NIVEL 4: FLUJOS FIBOTCLIENTES */}
                                                 <div className={`${styles.subMenuWrapper} ${expandedItems.includes('Fibotclientes') ? styles.subMenuOpen : ''}`}>
                                                     <div style={{ paddingLeft: '25px' }}>
-                                                        <FlowItem
-                                                            label="Solicitud Crédito"
-                                                            active={isActive('Solicitud Crédito')}
-                                                            onClick={() => onSelectFilter({ type: 'flow', value: 'Solicitud Crédito' })}
-                                                        />
-                                                        <FlowItem
-                                                            label="Clave Registro"
-                                                            active={isActive('Clave Registro')}
-                                                            onClick={() => onSelectFilter({ type: 'flow', value: 'Clave Registro' })}
-                                                        />
+                                                        <FlowItem label="Solicitud Crédito" active={isActive('Solicitud Crédito')} onClick={() => onSelectFilter({ type: 'flow', value: 'Solicitud Crédito' })} />
+                                                        <FlowItem label="Clave Registro" active={isActive('Clave Registro')} onClick={() => onSelectFilter({ type: 'flow', value: 'Clave Registro' })} />
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Canal: Operaciones */}
                                             <div>
                                                 <div
                                                     className={`${styles.subMenuItem} ${isActive('Operaciones') ? styles.subMenuItemActive : ''}`}
@@ -147,20 +154,13 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
                                                         {expandedItems.includes('Operaciones') ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                                                     </div>
                                                 </div>
-
-                                                {/* NIVEL 4: FLUJOS OPERACIONES */}
                                                 <div className={`${styles.subMenuWrapper} ${expandedItems.includes('Operaciones') ? styles.subMenuOpen : ''}`}>
                                                     <div style={{ paddingLeft: '25px' }}>
-                                                        <FlowItem
-                                                            label="Olvide Clave"
-                                                            active={isActive('Olvide Clave')}
-                                                            onClick={() => onSelectFilter({ type: 'flow', value: 'Olvide Clave' })}
-                                                        />
+                                                        <FlowItem label="Olvide Clave" active={isActive('Olvide Clave')} onClick={() => onSelectFilter({ type: 'flow', value: 'Olvide Clave' })} />
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Canal: Gestión Humana */}
                                             <div>
                                                 <div
                                                     className={`${styles.subMenuItem} ${isActive('Gestión Humana') ? styles.subMenuItemActive : ''}`}
@@ -174,15 +174,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
                                                         {expandedItems.includes('GH') ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                                                     </div>
                                                 </div>
-
-                                                {/* NIVEL 4: FLUJOS GESTIÓN HUMANA */}
                                                 <div className={`${styles.subMenuWrapper} ${expandedItems.includes('GH') ? styles.subMenuOpen : ''}`}>
                                                     <div style={{ paddingLeft: '25px' }}>
-                                                        <FlowItem
-                                                            label="Portal Empleado"
-                                                            active={isActive('Portal Empleado')}
-                                                            onClick={() => onSelectFilter({ type: 'flow', value: 'Portal Empleado' })}
-                                                        />
+                                                        <FlowItem label="Portal Empleado" active={isActive('Portal Empleado')} onClick={() => onSelectFilter({ type: 'flow', value: 'Portal Empleado' })} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -190,13 +184,11 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter }) => {
                                         </div>
                                     </div>
                                 </div>
-                                {/* Fin Cliente Comultrasan */}
 
                             </div>
                         </div>
                     </div>
 
-                    {/* Otros Proyectos */}
                     <div className={styles.menuItem} onClick={() => onSelectFilter({ type: 'project', value: 'Discos' })}>
                         <div className={styles.menuContent}>
                             <Folder size={18} color="#3b82f6" />

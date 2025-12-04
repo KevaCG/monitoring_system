@@ -45,7 +45,7 @@ Given("el usuario navega en la página web", () => {
     });
 });
 
-When("hago clic en Fibot Asistente virtual", () => {
+When("hago clic en Fibot Asistente virtual Operaciones", () => {
     validarPaso("2. Abrir Fibot", () => {
         cy.get(".img-responsive", { timeout: 10000 }).should('be.visible').click();
     });

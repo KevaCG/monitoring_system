@@ -1,90 +1,101 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import type { AuthCredentials, AuthMode } from '../models/auth.types';
-import type { Provider } from '@supabase/supabase-js';
-
-interface ModalState {
-    isOpen: boolean;
-    type: 'error' | 'success';
-    title: string;
-    message: string;
-}
 
 export const useAuth = () => {
-    const navigate = useNavigate();
-    const [mode, setMode] = useState<AuthMode>('login');
-    const [formData, setFormData] = useState<AuthCredentials>({ email: '', password: '', username: '' });
+    // --- ESTADOS ---
+    const [mode, setMode] = useState<'login' | 'register'>('login');
+    const [formData, setFormData] = useState({ username: '', email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
-    const [modal, setModal] = useState<ModalState>({ isOpen: false, type: 'success', title: '', message: '' });
     const [loading, setLoading] = useState(false);
+
+    const featureFlags = {
+        tests: {
+            atomic: true,
+            parly: false
+        }
+    };
+
+    const [modal, setModal] = useState({ isOpen: false, type: 'success' as 'success' | 'error', title: '', message: '' });
 
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [otpCode, setOtpCode] = useState('');
-    const [timer, setTimer] = useState(600);
-    const [canResend, setCanResend] = useState(false);
 
-    useEffect(() => {
-        let interval: any;
-        if (showOtpModal && timer > 0) {
-            interval = setInterval(() => {
-                setTimer((prev) => prev - 1);
-            }, 1000);
-        } else if (timer === 0) {
-            setCanResend(true);
-        }
-        return () => clearInterval(interval);
-    }, [showOtpModal, timer]);
+    const [timer] = useState('02:00');
+    const [canResend] = useState(false);
 
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    };
+    const [showRecoverModal, setShowRecoverModal] = useState(false);
+    const [recoverStep, setRecoverStep] = useState<'email' | 'otp' | 'password'>('email');
+    const [recoverEmail, setRecoverEmail] = useState('');
+    const [recoverOtp, setRecoverOtp] = useState('');
+    const [newPassword, setNewPassword] = useState('');
 
-    const toggleMode = () => setMode((prev) => (prev === 'login' ? 'register' : 'login'));
+    const navigate = useNavigate();
+
+    // --- HANDLERS ---
+    const toggleMode = () => setMode(prev => prev === 'login' ? 'register' : 'login');
     const togglePassword = () => setShowPassword(!showPassword);
 
-    const closeModal = () => {
-        setModal({ ...modal, isOpen: false });
-        if (modal.type === 'success' && mode === 'login') {
-            navigate('/dashboard');
-        }
-    };
+    const closeModal = () => setModal({ ...modal, isOpen: false });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
-        setOtpCode(val);
+    const handleOtpChange = (e: ChangeEvent<HTMLInputElement>, isRecovery: boolean) => {
+        const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+        if (isRecovery) {
+            setRecoverOtp(val);
+        } else {
+            setOtpCode(val);
+        }
     };
 
-    const validatePassword = (password: string): boolean => {
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
-        return regex.test(password);
-    };
+    // --- LÓGICA ---
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
 
-    const handleSocialLogin = async (provider: Provider) => {
         try {
-            setLoading(true);
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: provider,
-                options: { redirectTo: window.location.origin + '/dashboard' },
-            });
-            if (error) throw error;
+            if (mode === 'register') {
+                const { error } = await supabase.auth.signUp({
+                    email: formData.email,
+                    password: formData.password,
+                    options: {
+                        data: { username: formData.username }
+                    }
+                });
+                if (error) throw error;
+
+                setShowOtpModal(true);
+                setModal({ isOpen: true, type: 'success', title: 'Registro Iniciado', message: 'Revisa tu correo para el código de verificación.' });
+            } else {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: formData.email,
+                    password: formData.password
+                });
+                if (error) throw error;
+
+                navigate('/dashboard');
+            }
         } catch (error: any) {
-            setModal({ isOpen: true, type: 'error', title: 'Error', message: error.message });
+            setModal({
+                isOpen: true,
+                type: 'error',
+                title: 'Error de Autenticación',
+                message: error.message || 'Hubo un problema al procesar tu solicitud.'
+            });
+        } finally {
             setLoading(false);
         }
     };
 
+    const handleSocialLogin = (provider: string) => {
+        console.log(`Login con ${provider}`);
+    };
+
     const verifyOtp = async () => {
-        if (otpCode.length !== 6) {
-            alert("El código debe tener 6 dígitos");
-            return;
-        }
         setLoading(true);
         try {
             const { error } = await supabase.auth.verifyOtp({
@@ -96,73 +107,130 @@ export const useAuth = () => {
             if (error) throw error;
 
             setShowOtpModal(false);
-            setModal({
-                isOpen: true,
-                type: 'success',
-                title: '¡Cuenta Verificada!',
-                message: 'Has completado el registro exitosamente. Bienvenido.'
-            });
-            setMode('login');
+            setModal({ isOpen: true, type: 'success', title: '¡Bienvenido!', message: 'Tu cuenta ha sido verificada correctamente.' });
+            navigate('/dashboard');
 
         } catch (error: any) {
-            setModal({ isOpen: true, type: 'error', title: 'Código Inválido', message: error.message });
+            setModal({ isOpen: true, type: 'error', title: 'Código Inválido', message: error.message || 'El código ingresado es incorrecto.' });
         } finally {
             setLoading(false);
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!formData.email || !formData.password || (mode === 'register' && !formData.username)) {
-            setModal({ isOpen: true, type: 'error', title: 'Campos Incompletos', message: 'Por favor, llena todos los campos.' });
-            return;
-        }
-
-        if (mode === 'register' && !validatePassword(formData.password)) {
-            setModal({ isOpen: true, type: 'error', title: 'Contraseña Insegura', message: 'Mínimo 6 caracteres, 1 mayúscula, 1 minúscula y 1 número.' });
-            return;
-        }
-
+    const sendRecoveryCode = async () => {
         setLoading(true);
-
         try {
-            if (mode === 'login') {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email: formData.email,
-                    password: formData.password,
-                });
-                if (error) throw error;
-                navigate('/dashboard');
-            } else {
-                // --- REGISTRO CON OTP ---
-                const { error } = await supabase.auth.signUp({
-                    email: formData.email,
-                    password: formData.password,
-                    options: {
-                        data: { username: formData.username },
-                    },
-                });
+            const { error } = await supabase.auth.resetPasswordForEmail(recoverEmail);
 
-                if (error) throw error;
+            if (error) throw error;
 
-                setShowOtpModal(true);
-                setTimer(600);
-                setCanResend(false);
-            }
+            setRecoverStep('otp');
+            setModal({
+                isOpen: true,
+                type: 'success',
+                title: 'Correo Enviado',
+                message: `Si existe una cuenta con ${recoverEmail}, recibirás un código.`
+            });
+
         } catch (error: any) {
-            let msg = error.message;
-            if (msg === 'Invalid login credentials') msg = 'Correo o contraseña incorrectos.';
-            if (msg.includes('already registered')) msg = 'Este correo ya está registrado.';
-            setModal({ isOpen: true, type: 'error', title: 'Ocurrió un error', message: msg });
+            setModal({
+                isOpen: true,
+                type: 'error',
+                title: 'Error al enviar',
+                message: error.message || 'No se pudo enviar el correo de recuperación.'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const verifyRecoveryOtp = async () => {
+        setLoading(true);
+        try {
+            const { error } = await supabase.auth.verifyOtp({
+                email: recoverEmail,
+                token: recoverOtp,
+                type: 'recovery'
+            });
+
+            if (error) throw error;
+
+            setRecoverStep('password');
+
+        } catch (error: any) {
+            setModal({
+                isOpen: true,
+                type: 'error',
+                title: 'Código Inválido',
+                message: 'El código ingresado es incorrecto o ha expirado.'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resetPasswordFinal = async () => {
+        setLoading(true);
+        try {
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+            if (error) throw error;
+
+            setShowRecoverModal(false);
+            setRecoverStep('email');
+            setNewPassword('');
+
+            setModal({
+                isOpen: true,
+                type: 'success',
+                title: 'Contraseña Actualizada',
+                message: 'Ya puedes iniciar sesión con tu nueva clave.'
+            });
+
+        } catch (error: any) {
+            setModal({
+                isOpen: true,
+                type: 'error',
+                title: 'Error al actualizar',
+                message: error.message || 'No se pudo cambiar la contraseña.'
+            });
         } finally {
             setLoading(false);
         }
     };
 
     return {
-        mode, toggleMode, formData, handleChange, handleSubmit,
-        showPassword, togglePassword, modal, closeModal, loading, handleSocialLogin,
-        showOtpModal, otpCode, handleOtpChange, verifyOtp, timer: formatTime(timer), canResend, setShowOtpModal
+        featureFlags,
+        mode,
+        formData,
+        showPassword,
+        loading,
+        modal,
+        showOtpModal,
+        otpCode,
+        timer,
+        canResend,
+        showRecoverModal,
+        recoverStep,
+        recoverEmail,
+        recoverOtp,
+        newPassword,
+        toggleMode,
+        handleChange,
+        handleSubmit,
+        togglePassword,
+        closeModal,
+        setModal,
+        setShowOtpModal,
+        handleOtpChange,
+        verifyOtp,
+        handleSocialLogin,
+        setShowRecoverModal,
+        setRecoverEmail,
+        setRecoverOtp,
+        setNewPassword,
+        sendRecoveryCode,
+        verifyRecoveryOtp,
+        resetPasswordFinal
     };
 };

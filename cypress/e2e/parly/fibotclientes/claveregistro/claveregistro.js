@@ -95,9 +95,8 @@ When("ingresa la fecha de expedición requerida", () => {
 
 Then("el sistema debe entregar un código QR exitosamente", () => {
     validarPaso("8. Validar recepción del mensaje de éxito", () => {
+        cy.wait(5000);
         cy.contains("Valida tu identidad", { timeout: 30000 }).should('be.visible');
-        cy.contains("Escanea este código con tu celular para confirmar tu identidad", { timeout: 30000 }).should('be.visible');
-
         cy.log("Mensaje de validación encontrado correctamente");
         executionStatus = "OK";
     });

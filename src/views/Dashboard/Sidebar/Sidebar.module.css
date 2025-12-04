@@ -7,32 +7,70 @@
 
 .header {
     margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
     width: 100%;
-    padding-left: 10px;
+    padding-left: 5px;
 }
 
-.appName {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #6366f1;
-    /* var(--primary-color) */
-    letter-spacing: -0.5px;
+/* --- PERFIL DE USUARIO (NUEVO) --- */
+.userProfile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    transition: 0.2s;
 }
+
+.userProfile:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.userAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    /* Degradado Indigo-Morado */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(99, 102, 241, 0.2);
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.userName {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.userRole {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* --- FIN PERFIL --- */
 
 .nav {
     flex: 1;
     width: 100%;
     overflow-y: auto;
-    /* Scroll si el menú es muy largo */
     padding-right: 5px;
-    /* Espacio para scrollbar */
+    margin-top: 10px;
 }
 
-/* Scrollbar fina para el menú */
 .nav::-webkit-scrollbar {
     width: 4px;
 }
@@ -53,12 +91,10 @@
     letter-spacing: 0.5px;
 }
 
-/* Items del menú principal */
 .menuItem {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* Para separar icono/texto de la flecha */
     padding: 10px 12px;
     border-radius: 10px;
     cursor: pointer;
@@ -86,7 +122,7 @@
     gap: 10px;
 }
 
-/* --- ANIMACIÓN DE SUBMENÚS (ACORDEÓN) --- */
+/* Submenús */
 .subMenuWrapper {
     max-height: 0;
     overflow: hidden;
@@ -96,17 +132,14 @@
 
 .subMenuOpen {
     max-height: 1000px;
-    /* Altura suficiente para contener los hijos */
     opacity: 1;
 }
 
 .subMenuContainer {
     padding-left: 12px;
-    /* Indentación visual */
     position: relative;
 }
 
-/* Línea guía visual para la jerarquía */
 .subMenuContainer::before {
     content: '';
     position: absolute;
@@ -117,10 +150,8 @@
     background-color: #f1f5f9;
 }
 
-/* Items de submenú */
 .subMenuItem {
     padding: 8px 10px 8px 20px;
-    /* Padding izquierdo deja espacio para la línea */
     cursor: pointer;
     color: #64748b;
     font-size: 0.9rem;
@@ -144,7 +175,6 @@
     background-color: #eff6ff;
 }
 
-/* Indicador de activo (puntito) */
 .activeIndicator {
     width: 6px;
     height: 6px;
@@ -152,10 +182,9 @@
     background-color: #6366f1;
     position: absolute;
     left: 0;
-    /* Sobre la línea guía */
 }
 
-/* Botón Logout */
+/* Logout */
 .logoutBtn {
     display: flex;
     align-items: center;

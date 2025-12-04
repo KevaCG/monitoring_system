@@ -2,7 +2,7 @@ Feature: Asistente virtual comultrasan operaciones
 
     Scenario: Validar que el chat en la plataforma web Financiera Comultrasan funcione correctamente
         Given el usuario navega en la página web
-        When hago clic en Fibot Asistente virtual 
+        When hago clic en Fibot Asistente virtual ope
         And hago clic en la opción de operaciones
         And espero que muestre el primer mensaje de fibot
         And envió el mensaje de olvide mi clave
