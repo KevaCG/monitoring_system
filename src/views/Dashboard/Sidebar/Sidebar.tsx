@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
     LayoutDashboard, Folder, ChevronDown, ChevronRight, LogOut,
-    MessageSquare, Briefcase, Zap, UserCheck, Users
+    MessageSquare, Briefcase, Users, Layers,
+    HardDrive
 } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +18,7 @@ interface FilterContext {
 interface SidebarProps {
     filterContext: FilterContext;
     onSelectFilter: (filter: FilterContext) => void;
-    onOpenUsersModal?: () => void; // <--- NUEVA PROP PARA EL MODAL
+    onOpenUsersModal?: () => void;
 }
 
 interface SidebarItemProps {
@@ -38,7 +39,7 @@ interface SubMenuItemProps {
     onClick: () => void;
     isExpanded?: boolean;
     onToggle?: (e: React.MouseEvent<HTMLDivElement>) => void;
-    paddingLeft?: string;
+    iconColor?: string;
 }
 
 interface FlowItemProps {
@@ -64,12 +65,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         onClick={onClick}
     >
         <div className={styles.menuContent}>
-            {Icon && <Icon size={18} color={iconColor} />}
+            {Icon && <Icon size={18} style={{ color: isActive ? 'currentColor' : (iconColor || 'currentColor') }} strokeWidth={2} />}
             <span>{label}</span>
         </div>
         {hasSubmenu && onToggleExpand && (
-            <div onClick={onToggleExpand} style={{ padding: 4 }}>
-                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            <div onClick={onToggleExpand} style={{ display: 'flex', alignItems: 'center' }}>
+                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </div>
         )}
     </div>
@@ -82,23 +83,25 @@ const SubMenuItem: React.FC<SubMenuItemProps> = ({
     onClick,
     isExpanded,
     onToggle,
-    paddingLeft = '12px'
+    iconColor
 }) => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '8px 0', paddingLeft }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div
             className={`${styles.subMenuItem} ${isActive ? styles.subMenuItemActive : ''}`}
             onClick={onClick}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}
+            style={{ flex: 1 }}
         >
-            <div className={styles.menuContent} style={{ fontSize: '0.85rem' }}>
-                {isActive && <div className={styles.activeIndicator} />}
-                <Icon size={15} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Icon size={16} style={{ color: isActive ? 'currentColor' : (iconColor || '#94a3b8') }} />
                 <span>{label}</span>
             </div>
         </div>
         {onToggle && (
-            <div onClick={onToggle} style={{ padding: 2 }}>
-                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            <div
+                onClick={onToggle}
+                style={{ padding: '6px', cursor: 'pointer', color: '#94a3b8', display: 'flex' }}
+            >
+                {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
             </div>
         )}
     </div>
@@ -108,14 +111,27 @@ const FlowItem: React.FC<FlowItemProps> = ({ label, active, onClick }) => (
     <div
         onClick={(e) => { e.stopPropagation(); onClick(); }}
         style={{
-            padding: '6px 0', cursor: 'pointer', fontSize: '0.8rem',
-            color: active ? '#22c55e' : '#94a3b8',
+            padding: '6px 10px',
+            cursor: 'pointer',
+            fontSize: '0.8rem',
+            color: active ? '#4f46e5' : '#64748b',
             fontWeight: active ? 600 : 400,
-            display: 'flex', alignItems: 'center', gap: '8px',
-            transition: 'color 0.2s'
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            transition: 'all 0.2s',
+            borderRadius: '6px',
+            backgroundColor: active ? '#eff6ff' : 'transparent',
+            marginTop: '2px'
         }}
     >
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: active ? '#22c55e' : '#cbd5e1' }}></div>
+        <div style={{
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            backgroundColor: active ? '#4f46e5' : '#cbd5e1',
+            flexShrink: 0
+        }}></div>
         {label}
     </div>
 );
@@ -126,7 +142,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
     const navigate = useNavigate();
     const [userName, setUserName] = useState<string>("Usuario");
     const [userRole, setUserRole] = useState<string>("Usuario");
-    const [expandedItems, setExpandedItems] = useState<string[]>(['Parly', 'Comultrasan']);
+
+    // CAMBIO: Iniciamos con un array vacío para que todo esté colapsado al principio
+    const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
     useEffect(() => {
         const getUserData = async () => {
@@ -134,13 +152,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
             if (user) {
                 const name = user.user_metadata?.username || user.email?.split('@')[0] || "Usuario";
                 setUserName(name.charAt(0).toUpperCase() + name.slice(1));
-
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single();
-
+                const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
                 if (profile?.role) setUserRole(profile.role);
             }
         };
@@ -161,6 +173,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
 
     return (
         <div className={styles.container}>
+            {/* Header / Perfil */}
             <div className={styles.header}>
                 <div className={styles.userProfile}>
                     <div className={styles.userAvatar}>{initial}</div>
@@ -173,9 +186,8 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
 
             <nav className={styles.nav}>
 
-                {/* PRINCIPAL */}
+                {/* Dashboard */}
                 <div>
-                    <p className={styles.sectionTitle} style={{ marginTop: 0 }}>PRINCIPAL</p>
                     <SidebarItem
                         icon={LayoutDashboard}
                         label="Dashboard Global"
@@ -184,48 +196,55 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
                     />
                 </div>
 
-                {/* ADMIN - Ahora abre el Modal */}
+                {/* Administración */}
                 {isAdmin && (
-                    <div className="mt-4">
-                        <p className={styles.sectionTitle}>ADMINISTRACIÓN</p>
+                    <div>
+                        <p className={styles.sectionTitle}>Administración</p>
                         <SidebarItem
                             icon={Users}
                             label="Usuarios"
-                            isActive={false} // No lo marcamos activo porque es un modal flotante
-                            onClick={() => {
-                                if (onOpenUsersModal) onOpenUsersModal();
-                            }}
+                            isActive={false}
+                            onClick={() => onOpenUsersModal && onOpenUsersModal()}
                         />
                     </div>
                 )}
 
-                {/* PROYECTOS */}
+                {/* Proyectos */}
                 {canViewProjects && (
-                    <div className="mt-4">
-                        <p className={styles.sectionTitle}>PROYECTOS</p>
+                    <div>
+                        <p className={styles.sectionTitle}>Proyectos</p>
 
+                        {/* Plataformas (Carpeta Madre) */}
                         <SidebarItem
-                            icon={Folder} label="Atomic" iconColor="#6366f1"
-                            isActive={isAct('Atomic')}
-                            onClick={() => onSelectFilter({ type: 'project', value: 'Atomic' })}
+                            icon={Layers}
+                            label="Plataformas"
+                            isActive={false}
+                            hasSubmenu={true}
+                            isExpanded={isExp('Plataformas')}
+                            onToggleExpand={(e) => toggleExpand('Plataformas', e)}
+                            onClick={() => toggleExpand('Plataformas')}
                         />
 
-                        {/* Parly */}
-                        <div>
-                            <SidebarItem
-                                icon={Folder} label="Parly" iconColor="#22c55e"
-                                isActive={isAct('Parly')}
-                                onClick={() => onSelectFilter({ type: 'project', value: 'Parly' })}
-                                hasSubmenu={true}
-                                isExpanded={isExp('Parly')}
-                                onToggleExpand={(e) => toggleExpand('Parly', e)}
-                            />
+                        <div className={`${styles.subMenuWrapper} ${isExp('Plataformas') ? styles.subMenuOpen : ''}`}>
+                            <div className={styles.subMenuContainer}>
+                                <SubMenuItem
+                                    icon={Folder} label="Atomic"
+                                    isActive={isAct('Atomic')}
+                                    onClick={() => onSelectFilter({ type: 'project', value: 'Atomic' })}
+                                />
 
-                            <div className={`${styles.subMenuWrapper} ${isExp('Parly') ? styles.subMenuOpen : ''}`}>
-                                <div className={styles.subMenuContainer}>
+                                {/* Parly */}
+                                <SubMenuItem
+                                    icon={Folder} label="Parly"
+                                    isActive={isAct('Parly')}
+                                    onClick={() => onSelectFilter({ type: 'project', value: 'Parly' })}
+                                    isExpanded={isExp('Parly')}
+                                    onToggle={(e) => { e.stopPropagation(); toggleExpand('Parly'); }}
+                                />
 
-                                    {/* Comultrasan */}
-                                    <div>
+                                {/* Nivel 3: Dentro de Parly */}
+                                <div className={`${styles.subMenuWrapper} ${isExp('Parly') ? styles.subMenuOpen : ''}`}>
+                                    <div className={styles.subMenuContainer}>
                                         <SubMenuItem
                                             icon={Briefcase} label="Comultrasan"
                                             isActive={isAct('Comultrasan')}
@@ -234,74 +253,82 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
                                             onToggle={(e) => { e.stopPropagation(); toggleExpand('Comultrasan'); }}
                                         />
 
+                                        {/* Nivel 4: Dentro de Comultrasan */}
                                         <div className={`${styles.subMenuWrapper} ${isExp('Comultrasan') ? styles.subMenuOpen : ''}`}>
-                                            <div className={styles.subMenuContainer} style={{ borderLeft: '1px solid #e2e8f0', marginLeft: '12px' }}>
+                                            <div className={styles.subMenuContainer}>
 
                                                 {/* Fibotclientes */}
-                                                <div>
-                                                    <SubMenuItem
-                                                        icon={MessageSquare} label="Fibotclientes"
-                                                        isActive={isAct('Fibotclientes')}
-                                                        onClick={() => onSelectFilter({ type: 'canal', value: 'Fibotclientes' })}
-                                                        isExpanded={isExp('Fibotclientes')}
-                                                        onToggle={(e) => { e.stopPropagation(); toggleExpand('Fibotclientes'); }}
-                                                    />
-                                                    <div className={`${styles.subMenuWrapper} ${isExp('Fibotclientes') ? styles.subMenuOpen : ''}`}>
-                                                        <div style={{ paddingLeft: '25px' }}>
-                                                            <FlowItem label="Solicitud Crédito" active={isAct('Solicitud Crédito')} onClick={() => onSelectFilter({ type: 'flow', value: 'Solicitud Crédito' })} />
-                                                            <FlowItem label="Clave Registro" active={isAct('Clave Registro')} onClick={() => onSelectFilter({ type: 'flow', value: 'Clave Registro' })} />
-                                                        </div>
+                                                <SubMenuItem
+                                                    icon={MessageSquare} label="Fibotclientes"
+                                                    isActive={isAct('Fibotclientes')}
+                                                    onClick={() => onSelectFilter({ type: 'canal', value: 'Fibotclientes' })}
+                                                    isExpanded={isExp('Fibotclientes')}
+                                                    onToggle={(e) => { e.stopPropagation(); toggleExpand('Fibotclientes'); }}
+                                                />
+                                                <div className={`${styles.subMenuWrapper} ${isExp('Fibotclientes') ? styles.subMenuOpen : ''}`}>
+                                                    <div className={styles.subMenuContainer}>
+                                                        <FlowItem label="Solicitud Crédito" active={isAct('Solicitud Crédito')} onClick={() => onSelectFilter({ type: 'flow', value: 'Solicitud Crédito' })} />
+                                                        <FlowItem label="Clave Registro" active={isAct('Clave Registro')} onClick={() => onSelectFilter({ type: 'flow', value: 'Clave Registro' })} />
                                                     </div>
                                                 </div>
 
                                                 {/* Operaciones */}
-                                                <div>
-                                                    <SubMenuItem
-                                                        icon={Zap} label="Operaciones"
-                                                        isActive={isAct('Operaciones')}
-                                                        onClick={() => onSelectFilter({ type: 'canal', value: 'Operaciones' })}
-                                                        isExpanded={isExp('Operaciones')}
-                                                        onToggle={(e) => { e.stopPropagation(); toggleExpand('Operaciones'); }}
-                                                    />
-                                                    <div className={`${styles.subMenuWrapper} ${isExp('Operaciones') ? styles.subMenuOpen : ''}`}>
-                                                        <div style={{ paddingLeft: '25px' }}>
-                                                            <FlowItem label="Olvide Clave" active={isAct('Olvide Clave')} onClick={() => onSelectFilter({ type: 'flow', value: 'Olvide Clave' })} />
-                                                        </div>
+                                                {/* <SubMenuItem
+                                                    icon={Zap} label="Operaciones"
+                                                    isActive={isAct('Operaciones')}
+                                                    onClick={() => onSelectFilter({ type: 'canal', value: 'Operaciones' })}
+                                                    isExpanded={isExp('Operaciones')}
+                                                    onToggle={(e) => { e.stopPropagation(); toggleExpand('Operaciones'); }}
+                                                />
+                                                <div className={`${styles.subMenuWrapper} ${isExp('Operaciones') ? styles.subMenuOpen : ''}`}>
+                                                    <div className={styles.subMenuContainer}>
+                                                        <FlowItem label="Olvide Clave" active={isAct('Olvide Clave')} onClick={() => onSelectFilter({ type: 'flow', value: 'Olvide Clave' })} />
                                                     </div>
-                                                </div>
+                                                </div> */}
 
-                                                {/* GH */}
-                                                <div>
-                                                    <SubMenuItem
-                                                        icon={UserCheck} label="Gestión Humana"
-                                                        isActive={isAct('Gestión Humana')}
-                                                        onClick={() => onSelectFilter({ type: 'canal', value: 'Gestión Humana' })}
-                                                        isExpanded={isExp('GH')}
-                                                        onToggle={(e) => { e.stopPropagation(); toggleExpand('GH'); }}
-                                                    />
-                                                    <div className={`${styles.subMenuWrapper} ${isExp('GH') ? styles.subMenuOpen : ''}`}>
-                                                        <div style={{ paddingLeft: '25px' }}>
-                                                            <FlowItem label="Portal Empleado" active={isAct('Portal Empleado')} onClick={() => onSelectFilter({ type: 'flow', value: 'Portal Empleado' })} />
-                                                        </div>
+                                                {/* Gestión Humana */}
+                                                {/* <SubMenuItem
+                                                    icon={UserCheck} label="Gestión Humana"
+                                                    isActive={isAct('Gestión Humana')}
+                                                    onClick={() => onSelectFilter({ type: 'canal', value: 'Gestión Humana' })}
+                                                    isExpanded={isExp('GH')}
+                                                    onToggle={(e) => { e.stopPropagation(); toggleExpand('GH'); }}
+                                                />
+                                                <div className={`${styles.subMenuWrapper} ${isExp('GH') ? styles.subMenuOpen : ''}`}>
+                                                    <div className={styles.subMenuContainer}>
+                                                        <FlowItem label="Portal Empleado" active={isAct('Portal Empleado')} onClick={() => onSelectFilter({ type: 'flow', value: 'Portal Empleado' })} />
                                                     </div>
-                                                </div>
+                                                </div> */}
 
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
 
+                        {/* Discos */}
                         <SidebarItem
-                            icon={Folder} label="Discos" iconColor="#3b82f6"
-                            isActive={isAct('Discos')}
-                            onClick={() => onSelectFilter({ type: 'project', value: 'Discos' })}
+                            icon={HardDrive}
+                            label="Discos"
+                            isActive={false}
+                            hasSubmenu={true}
+                            isExpanded={isExp('Discos')}
+                            onToggleExpand={(e) => toggleExpand('Discos', e)}
+                            onClick={() => toggleExpand('Discos')}
                         />
+                        <div className={`${styles.subMenuWrapper} ${isExp('Discos') ? styles.subMenuOpen : ''}`}>
+                            <div className={styles.subMenuContainer}>
+                                <SubMenuItem icon={HardDrive} label="10.94.96.106" isActive={filterContext.type === 'server' && filterContext.value === '10.94.96.106'} onClick={() => onSelectFilter({ type: 'server', value: '10.94.96.106' })} />
+                                <SubMenuItem icon={HardDrive} label="10.240.64.9" isActive={filterContext.type === 'server' && filterContext.value === '10.240.64.9'} onClick={() => onSelectFilter({ type: 'server', value: '10.240.64.9' })} />
+                                <SubMenuItem icon={HardDrive} label="10.94.96.6" isActive={filterContext.type === 'server' && filterContext.value === '10.94.96.6'} onClick={() => onSelectFilter({ type: 'server', value: '10.94.96.6' })} />
+                            </div>
+                        </div>
 
+                        {/* Backup */}
                         <SidebarItem
-                            icon={Folder} label="Backup" iconColor="#a855f7"
+                            icon={Folder}
+                            label="Backup"
                             isActive={isAct('Backup')}
                             onClick={() => onSelectFilter({ type: 'project', value: 'Backup' })}
                         />
@@ -310,7 +337,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
             </nav>
 
             <button onClick={async () => { await supabase.auth.signOut(); navigate('/'); }} className={styles.logoutBtn}>
-                <LogOut size={20} />
+                <LogOut size={18} />
                 <span>Cerrar Sesión</span>
             </button>
         </div>

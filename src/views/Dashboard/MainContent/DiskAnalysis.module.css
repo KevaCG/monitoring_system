@@ -1,0 +1,275 @@
+.container {
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* --- CONTROL PANEL --- */
+.controlsCard {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+    border: 1px solid #e2e8f0;
+}
+
+.headerControl {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.controlTitle {
+    margin: 0;
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.searchInput {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.85rem;
+    color: #64748b;
+    width: 120px;
+}
+
+.selectorsGrid {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.selectorGroup {
+    flex: 1;
+}
+
+.label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.selectWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+}
+
+.select {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #1e293b;
+    font-size: 0.9rem;
+    cursor: pointer;
+    appearance: none;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.vsBadge {
+    padding-bottom: 10px;
+    font-weight: 800;
+    color: #cbd5e1;
+    font-size: 1rem;
+}
+
+/* --- TABS --- */
+.tabsContainer {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.activeTab {
+    color: #6366f1;
+    border-bottom-color: #6366f1;
+}
+
+/* --- CHARTS --- */
+.chartCard {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.cardTitle {
+    margin: 0 0 20px 0;
+    color: #1e293b;
+    font-size: 1.1rem;
+}
+
+/* --- TABLES --- */
+.tablesGrid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    /* Tabla - Flecha - Tabla */
+    gap: 20px;
+    align-items: start;
+}
+
+.arrowSeparator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding-top: 60px;
+    /* Ajuste visual */
+}
+
+.tableCard {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.tableHeader {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.tableDate {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.badge {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.miniTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.miniTable th {
+    padding: 10px 16px;
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+}
+
+.miniTable td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+}
+
+.actionBtn {
+    /* Estilos generales que ya deberían estar en ServerDiskView.module.css */
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #475569;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.actionBtn:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.btnExcel {
+    color: #10b981;
+    /* Verde esmeralda */
+}
+
+.btnExcel:hover {
+    background-color: #ecfdf5;
+    /* Verde muy claro */
+    border-color: #d1fae5;
+}
+
+.btnPdf {
+    color: #ef4444;
+    /* Rojo */
+}
+
+.btnPdf:hover {
+    background-color: #fef2f2;
+    /* Rojo muy claro */
+    border-color: #fecaca;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

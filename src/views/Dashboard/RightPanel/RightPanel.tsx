@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Bell, AlertTriangle, Play, Zap, User, Briefcase, Key, Activity, CheckCircle, ChevronDown, ChevronRight, Loader } from 'lucide-react';
+import { Bell, AlertTriangle, Play, Zap, Briefcase, Key, Activity, CheckCircle, ChevronDown, ChevronRight, Loader } from 'lucide-react';
 import styles from './RightPanel.module.css';
 import { supabase } from '../../../lib/supabase';
 
@@ -14,7 +14,7 @@ const RightPanel: React.FC = () => {
     // Nuevo estado para el rol
     const [userRole, setUserRole] = useState("Usuario");
 
-    // 1. Efecto para obtener el Rol del usuario
+    // 1. Efecto para obtener el Rol del usuario (CORREGIDO: maybeSingle)
     useEffect(() => {
         const getUserRole = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -23,7 +23,7 @@ const RightPanel: React.FC = () => {
                     .from('profiles')
                     .select('role')
                     .eq('id', user.id)
-                    .single();
+                    .maybeSingle(); // <--- CAMBIO AQUÍ: Previene error 406 si no hay perfil
 
                 if (profile && profile.role) {
                     setUserRole(profile.role);
@@ -33,13 +33,19 @@ const RightPanel: React.FC = () => {
         getUserRole();
     }, []);
 
-    // 2. Efecto para datos iniciales y suscripción en tiempo real
+    // 2. Efecto para datos iniciales y suscripción en tiempo real (CORREGIDO: maybeSingle)
     useEffect(() => {
         const fetchInitialData = async () => {
             const { data } = await supabase.from('monitoreos').select('*').eq('estado', 'ERROR').order('created_at', { ascending: false }).limit(5);
             if (data) setAlerts(data);
 
-            const { data: running } = await supabase.from('monitoreos').select('*').eq('estado', 'RUNNING').limit(1).single();
+            const { data: running } = await supabase
+                .from('monitoreos')
+                .select('*')
+                .eq('estado', 'RUNNING')
+                .limit(1)
+                .maybeSingle(); // <--- CAMBIO AQUÍ: Previene error 406 si no hay pruebas corriendo
+
             if (running) {
                 setLiveRun(running);
                 setShowExecutionModal(true);
@@ -83,12 +89,12 @@ const RightPanel: React.FC = () => {
         setLiveRun({
             id: 'temp',
             sistema: `Iniciando ${testId}...`,
-            mensaje: "🚀 Conectando con el servidor de pruebas...",
+            mensaje: "Conectando con el servidor de pruebas...",
             estado: 'RUNNING'
         });
         setShowExecutionModal(true);
 
-        console.log(`🚀 Contactando a GitHub Actions para: ${testId}`);
+        console.log(`Contactando a GitHub Actions para: ${testId}`);
 
         const token = import.meta.env.VITE_GITHUB_TOKEN;
         const owner = import.meta.env.VITE_REPO_OWNER;
@@ -248,7 +254,7 @@ const RightPanel: React.FC = () => {
                             {loadingAction !== 'Clave' && <Play size={12} fill={isBusy ? '#94a3b8' : '#eab308'} stroke="none" />}
                         </button>
 
-                        <button className={`${styles.actionButton} ${loadingAction === 'Operaciones' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Operaciones')} disabled={isBusy}>
+                        {/* <button className={`${styles.actionButton} ${loadingAction === 'Operaciones' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Operaciones')} disabled={isBusy}>
                             <div className={styles.btnIcon}>
                                 <Zap size={16} color={isBusy ? '#94a3b8' : '#f97316'} />
                                 <span>Canal Operaciones</span>
@@ -262,7 +268,7 @@ const RightPanel: React.FC = () => {
                                 <span>Gestión Humana</span>
                             </div>
                             {loadingAction !== 'GH' && <Play size={12} fill={isBusy ? '#94a3b8' : '#ec4899'} stroke="none" />}
-                        </button>
+                        </button> */}
 
                     </div>
                 </>

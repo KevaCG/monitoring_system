@@ -5,15 +5,29 @@ import styles from './MainContent.module.css';
 import { supabase } from '../../../lib/supabase';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+// Importamos la nueva vista de discos
+import ServerDiskView from './ServerDiskView';
 
+// Actualizamos la interfaz de props para incluir 'server'
 interface MainContentProps {
     filterContext: {
-        type: 'global' | 'project' | 'client' | 'canal' | 'flow';
+        type: 'global' | 'project' | 'client' | 'canal' | 'flow' | 'server';
         value: string;
     };
 }
 
 const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
+    // --------------------------------------------------------------------------------
+    // 1. LÓGICA DE ENRUTAMIENTO: Si es un servidor, retornamos la vista de discos
+    // --------------------------------------------------------------------------------
+    if (filterContext.type === 'server') {
+        return <ServerDiskView serverIp={filterContext.value} />;
+    }
+
+    // --------------------------------------------------------------------------------
+    // 2. CÓDIGO DEL DASHBOARD ORIGINAL (Para Global, Proyecto, Cliente, etc.)
+    // --------------------------------------------------------------------------------
+
     const [data, setData] = useState<any[]>([]);
     const [rawDataGlobal, setRawDataGlobal] = useState<any[]>([]);
 
