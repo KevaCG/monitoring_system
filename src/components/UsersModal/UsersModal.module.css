@@ -1,0 +1,315 @@
+/* --- Animaciones --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* --- Overlay Principal --- */
+.overlay {
+    position: fixed;
+    inset: 0;
+    /* top, right, bottom, left: 0 */
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    /* Efecto cristal */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* --- Contenedor del Modal --- */
+.modalContainer {
+    background-color: #f8fafc;
+    /* Slate 50 */
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 1024px;
+    /* lg size */
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    animation: zoomIn 0.2s ease-out;
+}
+
+/* --- Botón Cerrar --- */
+.closeBtn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem;
+    background-color: white;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeBtn:hover {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border-color: #fecaca;
+    transform: rotate(90deg);
+}
+
+/* --- Cabecera --- */
+.header {
+    background-color: white;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    /* Esto alinea el titulo a la izq y el buscador a la derecha */
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.searchInput {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    width: 350px;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchInput:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* --- Área de Contenido (Scroll) --- */
+.contentArea {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background-color: #f8fafc;
+}
+
+.tableContainer {
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    /* Para los bordes redondeados */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* --- Tabla --- */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.tableHead {
+    background-color: #f1f5f9;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    position: sticky;
+    /* Cabecera pegajosa */
+    top: 0;
+    z-index: 10;
+}
+
+.tableHead th {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tableBody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.15s;
+}
+
+.tableBody tr:last-child {
+    border-bottom: none;
+}
+
+.tableBody tr:hover {
+    background-color: #f8fafc;
+}
+
+.tableBody td {
+    padding: 1rem;
+    color: #334155;
+}
+
+/* --- Badges (Etiquetas de Rol) --- */
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: capitalize;
+}
+
+.badgeAdmin {
+    background-color: #f3e8ff;
+    /* Purple 100 */
+    color: #7e22ce;
+    /* Purple 700 */
+    border: 1px solid #e9d5ff;
+}
+
+.badgeUser {
+    background-color: #eff6ff;
+    /* Blue 50 */
+    color: #2563eb;
+    /* Blue 600 */
+    border: 1px solid #dbeafe;
+}
+
+/* --- Botones de Acción --- */
+.actionBtn {
+    padding: 0.4rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background: transparent;
+}
+
+.editBtn {
+    color: #2563eb;
+}
+
+.editBtn:hover {
+    background-color: #eff6ff;
+}
+
+.deleteBtn {
+    color: #ef4444;
+}
+
+.deleteBtn:hover {
+    background-color: #fef2f2;
+}
+
+/* --- Sub-Modal (Editar) --- */
+.editOverlay {
+    position: absolute;
+    /* Relativo al modal grande */
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    /* Fondo blanco semitransparente */
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    animation: fadeIn 0.2s;
+}
+
+.editCard {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    border: 1px solid #e2e8f0;
+    animation: zoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.inputGroup {
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: #f8fafc;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.select:focus {
+    border-color: #6366f1;
+    background-color: white;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.cancelBtn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cancelBtn:hover {
+    background-color: #f1f5f9;
+}
+
+.saveBtn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: white;
+    background-color: #6366f1;
+    /* Indigo 500 */
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.saveBtn:hover {
+    background-color: #4f46e5;
+    /* Indigo 600 */
+}

@@ -11,6 +11,29 @@ const RightPanel: React.FC = () => {
     const [liveRun, setLiveRun] = useState<any>(null);
     const [showExecutionModal, setShowExecutionModal] = useState(false);
 
+    // Nuevo estado para el rol
+    const [userRole, setUserRole] = useState("Usuario");
+
+    // 1. Efecto para obtener el Rol del usuario
+    useEffect(() => {
+        const getUserRole = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile && profile.role) {
+                    setUserRole(profile.role);
+                }
+            }
+        };
+        getUserRole();
+    }, []);
+
+    // 2. Efecto para datos iniciales y suscripción en tiempo real
     useEffect(() => {
         const fetchInitialData = async () => {
             const { data } = await supabase.from('monitoreos').select('*').eq('estado', 'ERROR').order('created_at', { ascending: false }).limit(5);
@@ -106,6 +129,7 @@ const RightPanel: React.FC = () => {
     };
 
     const isBusy = loadingAction !== null || liveRun !== null;
+    const isAdmin = userRole === 'Administrador';
 
     return (
         <div className={styles.container}>
@@ -188,62 +212,61 @@ const RightPanel: React.FC = () => {
                 </div>
             )}
 
-            <div className={styles.sectionTitle} style={{ marginTop: isAlertsOpen ? '0' : '20px' }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <Zap size={14} color="#6366f1" />
-                    <span>Ejecución Manual</span>
-                </div>
-            </div>
-
-            <div className={styles.actionGrid}>
-
-                <button className={`${styles.actionButton} ${loadingAction === 'Atomic' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Atomic')} disabled={isBusy}>
-                    <div className={styles.btnIcon}>
-                        <Activity size={16} color={isBusy ? '#94a3b8' : '#6366f1'} />
-                        <span>Suite Atomic (Global)</span>
+            {/* SECCIÓN DE EJECUCIÓN MANUAL: Solo visible para Administradores */}
+            {isAdmin && (
+                <>
+                    <div className={styles.sectionTitle} style={{ marginTop: isAlertsOpen ? '0' : '20px' }}>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <Zap size={14} color="#6366f1" />
+                            <span>Ejecución Manual</span>
+                        </div>
                     </div>
-                    {loadingAction !== 'Atomic' && <Play size={12} fill={isBusy ? '#94a3b8' : '#6366f1'} stroke="none" />}
-                </button>
 
-                <button className={`${styles.actionButton} ${loadingAction === 'Credito' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Credito')} disabled={isBusy}>
-                    <div className={styles.btnIcon}>
-                        <Briefcase size={16} color={isBusy ? '#94a3b8' : '#22c55e'} />
-                        <span>Flujo Solicitud Crédito</span>
+                    <div className={styles.actionGrid}>
+
+                        <button className={`${styles.actionButton} ${loadingAction === 'Atomic' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Atomic')} disabled={isBusy}>
+                            <div className={styles.btnIcon}>
+                                <Activity size={16} color={isBusy ? '#94a3b8' : '#6366f1'} />
+                                <span>Suite Atomic (Global)</span>
+                            </div>
+                            {loadingAction !== 'Atomic' && <Play size={12} fill={isBusy ? '#94a3b8' : '#6366f1'} stroke="none" />}
+                        </button>
+
+                        <button className={`${styles.actionButton} ${loadingAction === 'Credito' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Credito')} disabled={isBusy}>
+                            <div className={styles.btnIcon}>
+                                <Briefcase size={16} color={isBusy ? '#94a3b8' : '#22c55e'} />
+                                <span>Flujo Solicitud Crédito</span>
+                            </div>
+                            {loadingAction !== 'Credito' && <Play size={12} fill={isBusy ? '#94a3b8' : '#22c55e'} stroke="none" />}
+                        </button>
+
+                        <button className={`${styles.actionButton} ${loadingAction === 'Clave' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Clave')} disabled={isBusy}>
+                            <div className={styles.btnIcon}>
+                                <Key size={16} color={isBusy ? '#94a3b8' : '#eab308'} />
+                                <span>Flujo Clave Registro</span>
+                            </div>
+                            {loadingAction !== 'Clave' && <Play size={12} fill={isBusy ? '#94a3b8' : '#eab308'} stroke="none" />}
+                        </button>
+
+                        <button className={`${styles.actionButton} ${loadingAction === 'Operaciones' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Operaciones')} disabled={isBusy}>
+                            <div className={styles.btnIcon}>
+                                <Zap size={16} color={isBusy ? '#94a3b8' : '#f97316'} />
+                                <span>Canal Operaciones</span>
+                            </div>
+                            {loadingAction !== 'Operaciones' && <Play size={12} fill={isBusy ? '#94a3b8' : '#f97316'} stroke="none" />}
+                        </button>
+
+                        <button className={`${styles.actionButton} ${loadingAction === 'GH' ? styles.btnLoading : ''}`} onClick={() => triggerTest('GH')} disabled={isBusy}>
+                            <div className={styles.btnIcon}>
+                                <User size={16} color={isBusy ? '#94a3b8' : '#ec4899'} />
+                                <span>Gestión Humana</span>
+                            </div>
+                            {loadingAction !== 'GH' && <Play size={12} fill={isBusy ? '#94a3b8' : '#ec4899'} stroke="none" />}
+                        </button>
+
                     </div>
-                    {loadingAction !== 'Credito' && <Play size={12} fill={isBusy ? '#94a3b8' : '#22c55e'} stroke="none" />}
-                </button>
-
-                <button className={`${styles.actionButton} ${loadingAction === 'Clave' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Clave')} disabled={isBusy}>
-                    <div className={styles.btnIcon}>
-                        <Key size={16} color={isBusy ? '#94a3b8' : '#eab308'} />
-                        <span>Flujo Clave Registro</span>
-                    </div>
-                    {loadingAction !== 'Clave' && <Play size={12} fill={isBusy ? '#94a3b8' : '#eab308'} stroke="none" />}
-                </button>
-
-                <button className={`${styles.actionButton} ${loadingAction === 'Operaciones' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Operaciones')} disabled={isBusy}>
-                    <div className={styles.btnIcon}>
-                        <Zap size={16} color={isBusy ? '#94a3b8' : '#f97316'} />
-                        <span>Canal Operaciones</span>
-                    </div>
-                    {loadingAction !== 'Operaciones' && <Play size={12} fill={isBusy ? '#94a3b8' : '#f97316'} stroke="none" />}
-                </button>
-
-                <button className={`${styles.actionButton} ${loadingAction === 'GH' ? styles.btnLoading : ''}`} onClick={() => triggerTest('GH')} disabled={isBusy}>
-                    <div className={styles.btnIcon}>
-                        <User size={16} color={isBusy ? '#94a3b8' : '#ec4899'} />
-                        <span>Gestión Humana</span>
-                    </div>
-                    {loadingAction !== 'GH' && <Play size={12} fill={isBusy ? '#94a3b8' : '#ec4899'} stroke="none" />}
-                </button>
-
-            </div>
-
-            <div className={styles.sectionTitle} style={{ marginTop: 'auto' }}><span>Equipo QA</span></div>
-            <div className={styles.contactList}>
-                <div className={styles.contactItem}><div className={styles.avatar} style={{ background: '#dbeafe', color: '#2563eb' }}>NC</div><span className={styles.contactName}>Natali Craig</span></div>
-                <div className={styles.contactItem}><div className={styles.avatar} style={{ background: '#fce7f3', color: '#db2777' }}>DC</div><span className={styles.contactName}>Drew Cano</span></div>
-            </div>
+                </>
+            )}
         </div>
     );
 };
