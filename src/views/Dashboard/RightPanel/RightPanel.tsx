@@ -11,10 +11,9 @@ const RightPanel: React.FC = () => {
     const [liveRun, setLiveRun] = useState<any>(null);
     const [showExecutionModal, setShowExecutionModal] = useState(false);
 
-    // Nuevo estado para el rol
     const [userRole, setUserRole] = useState("Usuario");
 
-    // 1. Efecto para obtener el Rol del usuario (CORREGIDO: maybeSingle)
+    // 1. Efecto para obtener el Rol del usuario (Blindado contra 406)
     useEffect(() => {
         const getUserRole = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -23,7 +22,7 @@ const RightPanel: React.FC = () => {
                     .from('profiles')
                     .select('role')
                     .eq('id', user.id)
-                    .maybeSingle(); // <--- CAMBIO AQUÍ: Previene error 406 si no hay perfil
+                    .maybeSingle();
 
                 if (profile && profile.role) {
                     setUserRole(profile.role);
@@ -33,7 +32,7 @@ const RightPanel: React.FC = () => {
         getUserRole();
     }, []);
 
-    // 2. Efecto para datos iniciales y suscripción en tiempo real (CORREGIDO: maybeSingle)
+    // 2. Efecto para datos iniciales y suscripción en tiempo real (Blindado contra 406)
     useEffect(() => {
         const fetchInitialData = async () => {
             const { data } = await supabase.from('monitoreos').select('*').eq('estado', 'ERROR').order('created_at', { ascending: false }).limit(5);
@@ -44,7 +43,7 @@ const RightPanel: React.FC = () => {
                 .select('*')
                 .eq('estado', 'RUNNING')
                 .limit(1)
-                .maybeSingle(); // <--- CAMBIO AQUÍ: Previene error 406 si no hay pruebas corriendo
+                .maybeSingle(); // Usar maybeSingle
 
             if (running) {
                 setLiveRun(running);
@@ -218,7 +217,7 @@ const RightPanel: React.FC = () => {
                 </div>
             )}
 
-            {/* SECCIÓN DE EJECUCIÓN MANUAL: Solo visible para Administradores */}
+            {/* SECCIÓN DE EJECUCIÓN MANUAL */}
             {isAdmin && (
                 <>
                     <div className={styles.sectionTitle} style={{ marginTop: isAlertsOpen ? '0' : '20px' }}>
@@ -230,6 +229,7 @@ const RightPanel: React.FC = () => {
 
                     <div className={styles.actionGrid}>
 
+                        {/* Suite Atomic (Global) */}
                         <button className={`${styles.actionButton} ${loadingAction === 'Atomic' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Atomic')} disabled={isBusy}>
                             <div className={styles.btnIcon}>
                                 <Activity size={16} color={isBusy ? '#94a3b8' : '#6366f1'} />
@@ -238,32 +238,38 @@ const RightPanel: React.FC = () => {
                             {loadingAction !== 'Atomic' && <Play size={12} fill={isBusy ? '#94a3b8' : '#6366f1'} stroke="none" />}
                         </button>
 
-                        <button className={`${styles.actionButton} ${loadingAction === 'Credito' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Credito')} disabled={isBusy}>
+                        {/* Flujo Solicitud Crédito - ID CORREGIDO a 'credito' */}
+                        <button className={`${styles.actionButton} ${loadingAction === 'credito' ? styles.btnLoading : ''}`}
+                            onClick={() => triggerTest('credito')} disabled={isBusy}>
                             <div className={styles.btnIcon}>
                                 <Briefcase size={16} color={isBusy ? '#94a3b8' : '#22c55e'} />
                                 <span>Flujo Solicitud Crédito</span>
                             </div>
-                            {loadingAction !== 'Credito' && <Play size={12} fill={isBusy ? '#94a3b8' : '#22c55e'} stroke="none" />}
+                            {loadingAction !== 'credito' && <Play size={12} fill={isBusy ? '#94a3b8' : '#22c55e'} stroke="none" />}
                         </button>
 
-                        <button className={`${styles.actionButton} ${loadingAction === 'Clave' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Clave')} disabled={isBusy}>
+                        {/* Flujo Clave Registro - ID CORREGIDO a 'claveregistro' */}
+                        <button className={`${styles.actionButton} ${loadingAction === 'claveregistro' ? styles.btnLoading : ''}`}
+                            onClick={() => triggerTest('claveregistro')} disabled={isBusy}>
                             <div className={styles.btnIcon}>
                                 <Key size={16} color={isBusy ? '#94a3b8' : '#eab308'} />
                                 <span>Flujo Clave Registro</span>
                             </div>
-                            {loadingAction !== 'Clave' && <Play size={12} fill={isBusy ? '#94a3b8' : '#eab308'} stroke="none" />}
+                            {loadingAction !== 'claveregistro' && <Play size={12} fill={isBusy ? '#94a3b8' : '#eab308'} stroke="none" />}
                         </button>
 
+                        {/* Canal Operaciones (Comentado) */}
                         {/* <button className={`${styles.actionButton} ${loadingAction === 'Operaciones' ? styles.btnLoading : ''}`} onClick={() => triggerTest('Operaciones')} disabled={isBusy}>
                             <div className={styles.btnIcon}>
                                 <Zap size={16} color={isBusy ? '#94a3b8' : '#f97316'} />
                                 <span>Canal Operaciones</span>
                             </div>
                             {loadingAction !== 'Operaciones' && <Play size={12} fill={isBusy ? '#94a3b8' : '#f97316'} stroke="none" />}
-                        </button>
+                        </button> */}
 
-                        <button className={`${styles.actionButton} ${loadingAction === 'GH' ? styles.btnLoading : ''}`} onClick={() => triggerTest('GH')} disabled={isBusy}>
-                            <div className={styles.btnIcon}>
+                        {/* Gestión Humana (Comentado) */}
+                        {/* <button className={`${styles.actionButton} ${loadingAction === 'GH' ? styles.btnLoading : ''}`} onClick={() => triggerTest('GH')} disabled={isBusy}>
+                            <div className className={styles.btnIcon}>
                                 <User size={16} color={isBusy ? '#94a3b8' : '#ec4899'} />
                                 <span>Gestión Humana</span>
                             </div>

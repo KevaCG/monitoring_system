@@ -322,6 +322,8 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
                                 <SubMenuItem icon={HardDrive} label="10.94.96.106" isActive={filterContext.type === 'server' && filterContext.value === '10.94.96.106'} onClick={() => onSelectFilter({ type: 'server', value: '10.94.96.106' })} />
                                 <SubMenuItem icon={HardDrive} label="10.240.64.9" isActive={filterContext.type === 'server' && filterContext.value === '10.240.64.9'} onClick={() => onSelectFilter({ type: 'server', value: '10.240.64.9' })} />
                                 <SubMenuItem icon={HardDrive} label="10.94.96.6" isActive={filterContext.type === 'server' && filterContext.value === '10.94.96.6'} onClick={() => onSelectFilter({ type: 'server', value: '10.94.96.6' })} />
+                                <SubMenuItem icon={HardDrive} label="10.94.84.135" isActive={filterContext.type === 'server' && filterContext.value === '10.94.84.135'} onClick={() => onSelectFilter({ type: 'server', value: '10.94.84.135' })} />
+                                <SubMenuItem icon={HardDrive} label="10.94.84.158" isActive={filterContext.type === 'server' && filterContext.value === '10.94.84.158'} onClick={() => onSelectFilter({ type: 'server', value: '10.94.84.158' })} />
                             </div>
                         </div>
 
