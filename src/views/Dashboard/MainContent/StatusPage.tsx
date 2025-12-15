@@ -41,7 +41,7 @@ const INITIAL_STATUS_CHECKS: StatusItem[] = [
 
 const StatusPage: React.FC = () => {
     const [statusChecks, setStatusChecks] = useState<StatusItem[]>(INITIAL_STATUS_CHECKS);
-    const [lastUpdated, setLastUpdated] = useState<string>('');
+    const [, setLastUpdated] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [selectedError, setSelectedError] = useState<StatusRun | null>(null);
     const [isExporting, setIsExporting] = useState(false);

@@ -255,7 +255,6 @@ const DiskAnalysis: React.FC<DiskAnalysisProps> = ({ serverIp }) => {
 
     const exportToCSV = () => {
         const dateA_display = getBatchDisplayDate(selectedBatchA);
-        const dateB_display = getBatchDisplayDate(selectedBatchB);
 
         // Crear las filas del CSV
         const rows = filteredA.map(diskA => {

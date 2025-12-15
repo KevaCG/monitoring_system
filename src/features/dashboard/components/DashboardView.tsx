@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, YAxis } from 'recharts';
-import { Eye, X, Calendar, Clock, Timer, AlertTriangle, CheckCircle, FileText, Download, Search, AlertOctagon, Edit2 } from 'lucide-react';
+import { Eye, X, Calendar, Clock, Timer, AlertTriangle, CheckCircle, FileText, Download, Search, Edit2 } from 'lucide-react';
 import styles from "../pages/Dashboard.module.css";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 interface DashboardUIProps {
     filterContext: any;
-    data: any[]; // Datos ya procesados
+    data: any[];
     stats: { total: number, ok: number, error: number, avgTimeLast4: string };
     chartData: any[];
     barData: any[];
@@ -19,7 +19,7 @@ interface DashboardUIProps {
     selectedRun: any;
 }
 
-const COLORS = ['#22c55e', '#ef4444']; // Colores para Pie Chart
+const COLORS = ['#22c55e', '#ef4444'];
 
 const getErrorDetails = (msg: string) => {
     if (!msg) return { step: "N/A", type: "Unknown", category: "N/A", component: "N/A", severity: "N/A" };
@@ -155,7 +155,7 @@ const DashboardUI: React.FC<DashboardUIProps> = ({
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={pieData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                        {pieData.map((entry, index) => (
+                                        {pieData.map((_entry, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>

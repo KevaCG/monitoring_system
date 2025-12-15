@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, YAxis } from 'recharts';
-import { Eye, X, Calendar, Clock, Timer, AlertTriangle, CheckCircle, FileText, Download, Search, AlertOctagon, Edit2 } from 'lucide-react';
+import { Eye, X, Calendar, Clock, Timer, AlertTriangle, CheckCircle, FileText, Download, Search, Edit2 } from 'lucide-react';
 import styles from './MainContent.module.css';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -155,7 +155,7 @@ const DashboardUI: React.FC<DashboardUIProps> = ({
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={pieData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                        {pieData.map((entry, index) => (
+                                        {pieData.map((_entry, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
