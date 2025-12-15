@@ -1,0 +1,89 @@
+.dashboardContainer {
+    display: grid;
+    /* La definición de columnas ahora se maneja dinámicamente en el TSX, 
+     pero dejamos un fallback por si acaso */
+    grid-template-columns: 20% 1fr 20%;
+    width: 100vw;
+    /* Ocupa el 100% del ancho de la ventana */
+    height: 100vh;
+    /* Ocupa el 100% del alto */
+    background-color: #f8fafc;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    transition: grid-template-columns 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* Animación suave al expandir */
+}
+
+/* Áreas Laterales */
+.sidebarArea {
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Importante para que el contenido no desborde al cerrar */
+    transition: all 0.4s ease;
+    min-width: 0;
+    /* Permite que se reduzca a 0 */
+}
+
+.rightArea {
+    background-color: #ffffff;
+    border-left: 1px solid #e2e8f0;
+    padding: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: all 0.4s ease;
+    min-width: 0;
+}
+
+/* Área Principal */
+.mainArea {
+    position: relative;
+    /* Para posicionar los botones flotantes si quisiéramos */
+    overflow-y: auto;
+    padding: 0;
+    /* Quitamos padding contenedor para manejarlo internamente */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Barra de herramientas para los toggles */
+.toggleBar {
+    padding: 15px 30px 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggleButton {
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.toggleButton:hover {
+    background-color: #f1f5f9;
+    color: var(--primary-color);
+    border-color: #cbd5e1;
+}
+
+/* Contenedor interno del contenido principal */
+.contentWrapper {
+    padding: 10px 30px 30px 30px;
+    flex: 1;
+}
+
+/* Ocultar visualmente el contenido cuando el ancho es muy pequeño */
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
