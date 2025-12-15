@@ -2,14 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../../lib/supabase';
 import {
     Calendar, Search, BarChart2, Table, ArrowRight, Filter,
-    FileText, Download // <--- NUEVOS ICONOS
+    FileText, Download
 } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import styles from './DiskAnalysis.module.css';
-import jsPDF from 'jspdf'; // <--- IMPORTAR
-import autoTable from 'jspdf-autotable'; // <--- IMPORTAR
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface DiskData {
     id: string;
@@ -32,6 +32,37 @@ interface BatchInfo {
 interface DiskAnalysisProps {
     serverIp: string;
 }
+
+// --- HELPERS DE CONVERSIÓN DE TAMAÑO (NUEVOS) ---
+
+// Convierte el formato de Bash (ej: "2.0T", "11G") a bytes
+const sizeToBytes = (sizeStr: string): number => {
+    if (!sizeStr) return 0;
+    const size = parseFloat(sizeStr);
+    const unit = sizeStr.slice(-1).toUpperCase();
+
+    if (unit === 'T') return size * Math.pow(1024, 4);
+    if (unit === 'G') return size * Math.pow(1024, 3);
+    if (unit === 'M') return size * Math.pow(1024, 2);
+    if (unit === 'K') return size * 1024;
+    return size; // Si ya está en bytes o no tiene unidad
+};
+
+// Convierte bytes de vuelta a un formato legible (ej: 50000000000 -> "50.0 GB")
+const bytesToSize = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const absBytes = Math.abs(bytes);
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(absBytes) / Math.log(1024));
+    const formattedSize = (absBytes / Math.pow(1024, i)).toFixed(1);
+
+    // Agregamos el signo si es negativo
+    const sign = bytes < 0 ? '-' : '+';
+
+    return `${sign}${formattedSize} ${units[i]}`;
+};
+
+// --- FIN HELPERS ---
 
 const DiskAnalysis: React.FC<DiskAnalysisProps> = ({ serverIp }) => {
 
@@ -178,39 +209,45 @@ const DiskAnalysis: React.FC<DiskAnalysisProps> = ({ serverIp }) => {
         doc.setFontSize(14);
         doc.text(`Análisis Comparativo: ${serverIp}`, 14, 20);
         doc.setFontSize(10);
-        doc.text(`Fecha A (Referencia): ${dateA_display}`, 14, 27);
-        doc.text(`Fecha B (Comparación): ${dateB_display}`, 14, 32);
+        doc.text(`Paquete A (Referencia): ${dateA_display}`, 14, 27);
+        doc.text(`Paquete B (Comparación): ${dateB_display}`, 14, 32);
 
         // Preparar datos para la tabla PDF
         const pdfData = filteredA.map(diskA => {
             const diskB = filteredB.find(d => d.mount_point === diskA.mount_point);
-            const usageDiff = diskA.use_percent - (diskB?.use_percent || 0);
+            const usageDiffPercent = diskA.use_percent - (diskB?.use_percent || 0);
 
-            let diffText = '';
-            if (usageDiff > 0) {
-                diffText = `▲ +${usageDiff}%`;
-            } else if (usageDiff < 0) {
-                diffText = `▼ ${usageDiff}%`;
-            } else {
-                diffText = `- 0%`;
-            }
+            // CALCULAR DIFERENCIA EN TAMAÑO (Bytes)
+            const usedA_bytes = sizeToBytes(diskA.used);
+            const usedB_bytes = diskB ? sizeToBytes(diskB.used) : 0;
+            const sizeDiffBytes = usedA_bytes - usedB_bytes; // Diferencia en bytes
+
+            // Convertir a formato legible con signo (+/- GB/TB)
+            const sizeDiffDisplay = bytesToSize(sizeDiffBytes);
+
+            const percentDiffDisplay = usageDiffPercent > 0 ? `▲ +${usageDiffPercent}%` :
+                usageDiffPercent < 0 ? `▼ ${usageDiffPercent}%` :
+                    `- 0%`;
 
             return [
                 diskA.mount_point,
                 diskA.size,
                 `${diskA.use_percent}%`,
                 diskB ? `${diskB.use_percent}%` : 'N/A',
-                diffText
+                sizeDiffDisplay, // <--- NUEVA COLUMNA DE DIFERENCIA EN TAMAÑO
+                percentDiffDisplay // <--- Diferencia en porcentaje
             ];
         });
 
         autoTable(doc, {
             startY: 40,
-            head: [['Montaje', 'Tamaño', `Uso ${dateA_display}`, `Uso ${dateB_display}`, 'Diferencia']],
+            head: [
+                ['Montaje', 'Tamaño Total', `Uso % (A)`, `Uso % (B)`, 'Diferencia (Tamaño)', 'Diferencia (%)']
+            ],
             body: pdfData,
             styles: { fontSize: 8 },
             headStyles: { fillColor: [99, 102, 241], fontStyle: 'bold' },
-            alternateRowStyles: { fillColor: [248, 250, 252] } // f8fafc
+            alternateRowStyles: { fillColor: [248, 250, 252] }
         });
 
         doc.save(`Analisis_Discos_${serverIp}_${dateA_display.replace(/[/ :]/g, '_')}.pdf`);
@@ -223,29 +260,45 @@ const DiskAnalysis: React.FC<DiskAnalysisProps> = ({ serverIp }) => {
         // Crear las filas del CSV
         const rows = filteredA.map(diskA => {
             const diskB = filteredB.find(d => d.mount_point === diskA.mount_point);
-            const usageDiff = diskA.use_percent - (diskB?.use_percent || 0);
+
+            const usageDiffPercent = diskA.use_percent - (diskB?.use_percent || 0);
+
+            // CALCULAR DIFERENCIA EN TAMAÑO (Bytes)
+            const usedA_bytes = sizeToBytes(diskA.used);
+            const usedB_bytes = diskB ? sizeToBytes(diskB.used) : 0;
+            const sizeDiffBytes = usedA_bytes - usedB_bytes;
+            const sizeDiffDisplay = bytesToSize(sizeDiffBytes); // Formato legible
 
             return [
                 diskA.mount_point,
                 diskA.filesystem,
                 diskA.size,
                 diskA.used,
-                diskA.avail,
+                diskB ? diskB.used : 'N/A',
                 diskA.use_percent,
                 diskB ? diskB.use_percent : 'N/A',
-                usageDiff
+                usageDiffPercent,
+                sizeDiffDisplay // <--- NUEVA COLUMNA EN CSV
             ];
         });
 
         // Encabezado del CSV
-        const header = ['Montaje', 'Filesystem', 'Tamaño', 'Usado (A)', 'Disponible (A)', `Uso % (${dateA_display})`, `Uso % (${dateB_display})`, 'Diferencia %'];
+        const header = [
+            'Montaje',
+            'Filesystem',
+            'Tamaño Total',
+            `Usado (A)`,
+            `Usado (B)`,
+            `Uso % (A)`,
+            `Uso % (B)`,
+            'Diferencia %',
+            'Diferencia (Tamaño)' // <--- NUEVA COLUMNA EN ENCABEZADO
+        ];
 
-        // Unir encabezado y filas
         const csvContent = "data:text/csv;charset=utf-8,"
             + header.join(",") + "\n"
             + rows.map(e => e.join(",")).join("\n");
 
-        // Crear enlace de descarga
         const link = document.createElement("a");
         link.setAttribute("href", encodeURI(csvContent));
         link.setAttribute("download", `Analisis_Discos_${serverIp}_${dateA_display.replace(/[/ :]/g, '_')}.csv`);
@@ -269,7 +322,7 @@ const DiskAnalysis: React.FC<DiskAnalysisProps> = ({ serverIp }) => {
                             <Download size={18} /> PDF
                         </button>
 
-                        {/* FILTRO EN ANALISIS */}
+                        {/* FILTRO EN ANALISIS (Mantiene la UI del filtro) */}
                         <div className={styles.selectWrapper} ref={filterRef}>
                             <button
                                 className={styles.select}

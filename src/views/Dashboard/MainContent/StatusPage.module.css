@@ -1,0 +1,366 @@
+/* StatusPage.module.css */
+
+.statusContainer {
+    padding: 30px;
+    background-color: #f8fafc;
+    min-height: 100%;
+}
+
+/* Header */
+.header {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.meta p {
+    margin: 0;
+}
+
+.refreshBtn {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 6px 12px;
+    background: #e0e7ff;
+    color: #4f46e5;
+    border: 1px solid #c7d2fe;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.refreshBtn:hover {
+    background-color: #c7d2fe;
+}
+
+/* Status Grid */
+.statusGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.sectionCard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.sectionHeader {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.sectionTitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #334155;
+    margin: 0;
+}
+
+.overallBadge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.overallBadge[data-status="OPERACIONAL"] {
+    background-color: #dcfce7;
+    /* Green 100 */
+    color: #16a34a;
+    /* Green 600 */
+}
+
+.overallBadge[data-status="ERROR"] {
+    background-color: #fee2e2;
+    /* Red 100 */
+    color: #ef4444;
+    /* Red 600 */
+}
+
+/* Check List */
+.checkList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.checkItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f8fafc;
+    transition: background-color 0.2s;
+}
+
+.checkItem:last-child {
+    border-bottom: none;
+}
+
+.checkItem:hover {
+    background-color: #fcfcfd;
+}
+
+.checkContent {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #334155;
+    font-size: 0.9rem;
+}
+
+.checkStatus {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.checkStatus[data-status="OPERACIONAL"] {
+    color: #16a34a;
+}
+
+.checkStatus[data-status="ERROR"] {
+    color: #ef4444;
+}
+
+.checkStatus[data-status="CARGANDO"] {
+    color: #64748b;
+}
+
+/* Footer y Animaciones */
+.footer {
+    margin-top: 30px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+.headerTitleWrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.mainTitle {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    /* Asegurar que no hay margen */
+}
+
+.statusIndicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-left: 5px;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    /* Efecto 3D */
+}
+
+.statusIndicator[data-overall="OPERACIONAL"] {
+    background-color: #22c55e;
+    /* Verde */
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+}
+
+.statusIndicator[data-overall="ERROR"] {
+    background-color: #ef4444;
+    /* Rojo */
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+}
+
+/* --- ESTILO PARA ITEM DE ERROR CLICKABLE --- */
+.checkItem[data-status="ERROR"] {
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.checkItem[data-status="ERROR"]:hover {
+    background-color: #fee2e2;
+    /* Rojo claro para feedback */
+    border-color: #fca5a5;
+    border-radius: 6px;
+}
+
+/* --- MODAL DE ERROR --- */
+.errorModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.errorModalContent {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modalCloseBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+}
+
+.errorDetailBox {
+    background-color: #fef2f2;
+    border: 1px solid #fca5a5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.errorTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ef4444;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.errorLog {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 10px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+    /* Mantiene saltos de línea */
+}
+
+.techGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    font-size: 0.9rem;
+    padding: 10px 0;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.techLabel {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.techValue {
+    color: #1e293b;
+}
+
+/* Botones de Acción en el Header */
+.actionsWrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.btnPdf {
+    background-color: #fee2e2;
+    color: #ef4444;
+    border-color: #fecaca;
+}
+
+.btnPdf:hover {
+    background-color: #fecaca;
+}
+
+.btnExcel {
+    background-color: #dcfce7;
+    color: #16a34a;
+    border-color: #bbf7d0;
+}
+
+.btnExcel:hover {
+    background-color: #bbf7d0;
+}
+
+/* El botón de actualizar existente */
+.refreshBtn {
+    /* ... (mantiene tus estilos actuales, o adáptalos) ... */
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 8px 16px;
+    background: #e0e7ff;
+    color: #4f46e5;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}

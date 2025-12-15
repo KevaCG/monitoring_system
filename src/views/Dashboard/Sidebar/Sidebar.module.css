@@ -3,16 +3,12 @@
     display: flex;
     flex-direction: column;
     background-color: #ffffff;
-    /* Fondo blanco puro */
     border-right: 1px solid #f1f5f9;
-    /* Borde derecho muy sutil */
     padding: 20px 16px;
-    /* Más padding general para que respire */
     font-family: 'Inter', system-ui, sans-serif;
-    /* Asegurando fuente moderna */
 }
 
-/* --- PERFIL DE USUARIO (Minimalista) --- */
+/* --- PERFIL DE USUARIO --- */
 .header {
     margin-bottom: 24px;
     width: 100%;
@@ -24,16 +20,13 @@
     align-items: center;
     gap: 12px;
     padding: 8px 0;
-    /* Sin bordes ni fondo, solo padding vertical */
     transition: 0.2s;
 }
 
 .userAvatar {
     width: 36px;
-    /* Un poco más pequeño y elegante */
     height: 36px;
     border-radius: 10px;
-    /* Cuadrado redondeado (Squircle) es más moderno que círculo */
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
     display: flex;
@@ -62,13 +55,11 @@
     font-weight: 500;
 }
 
-/* --- FIN PERFIL --- */
-
+/* --- NAVEGACIÓN --- */
 .nav {
     flex: 1;
     width: 100%;
     overflow-y: auto;
-    /* Ocultar scrollbar visualmente pero mantener funcionalidad */
     scrollbar-width: none;
 }
 
@@ -85,7 +76,6 @@
     padding-left: 12px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    /* Más espaciado entre letras */
 }
 
 /* --- ITEMS DEL MENÚ --- */
@@ -97,13 +87,11 @@
     border-radius: 8px;
     cursor: pointer;
     color: #64748b;
-    /* Gris medio para inactivos */
     font-weight: 500;
     font-size: 0.9rem;
     transition: all 0.2s ease;
     margin-bottom: 4px;
     border: 1px solid transparent;
-    /* Evita saltos al hacer hover */
 }
 
 .menuItem:hover {
@@ -113,9 +101,7 @@
 
 .menuItemActive {
     background-color: #eff6ff;
-    /* Azul/Indigo muy suave */
     color: #4f46e5;
-    /* Color primario */
     font-weight: 600;
 }
 
@@ -123,10 +109,33 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    /* Más espacio entre icono y texto */
 }
 
-/* --- SUBMENÚS (Árbol limpio) --- */
+/* --- INDICADOR DE ESTADO (BOLITA) --- */
+.statusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: auto;
+    transition: all 0.3s;
+}
+
+.statusDot[data-status="green"] {
+    background-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+}
+
+.statusDot[data-status="red"] {
+    background-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+}
+
+.statusDot[data-status="gray"] {
+    background-color: #94a3b8;
+    box-shadow: none;
+}
+
+/* --- SUBMENÚS --- */
 .subMenuWrapper {
     max-height: 0;
     overflow: hidden;
@@ -136,21 +145,17 @@
 
 .subMenuOpen {
     max-height: 1000px;
-    /* Valor arbitrario alto para permitir expansión */
     opacity: 1;
 }
 
 .subMenuContainer {
     display: flex;
     flex-direction: column;
-    /* CAMBIO CLAVE: Reducimos la indentación de 20px a 10px */
     margin-left: 10px;
     padding-left: 0;
-    border-left: none;
+    border-left: 1px solid #f1f5f9;
     margin-top: 2px;
     margin-bottom: 2px;
-    /* Opcional: Una línea vertical muy sutil que ayuda a guiar la vista sin ocupar espacio */
-    border-left: 1px solid #f1f5f9;
 }
 
 .subMenuItem {
@@ -175,16 +180,9 @@
     color: #4f46e5;
     font-weight: 600;
     background-color: transparent;
-    /* Sin fondo en hijos, solo color texto */
 }
 
-/* Indicador de activo (puntito) */
-.activeIndicator {
-    display: none;
-    /* Lo ocultamos para un look más limpio, usamos color de texto */
-}
-
-/* --- LOGOUT (Estilo "Ghost") --- */
+/* --- LOGOUT --- */
 .logoutBtn {
     display: flex;
     align-items: center;
@@ -192,7 +190,6 @@
     padding: 12px;
     border-radius: 8px;
     color: #64748b;
-    /* Gris por defecto */
     background-color: transparent;
     border: 1px solid transparent;
     cursor: pointer;
@@ -205,8 +202,6 @@
 
 .logoutBtn:hover {
     background-color: #fee2e2;
-    /* Fondo rojo suave al hover */
     color: #ef4444;
-    /* Texto rojo al hover */
     border-color: #fecaca;
 }
