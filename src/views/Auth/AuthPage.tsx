@@ -4,14 +4,12 @@ import { useAuth } from '../../controllers/useAuth';
 import styles from './Auth.module.css';
 
 const AuthPage: React.FC = () => {
-    // Estado local para ver la contraseña EN EL MODAL de recuperación
     const [showRecoverPass, setShowRecoverPass] = useState(false);
 
-    // Extraemos todas las funciones y estados del controlador real
     const {
         mode, toggleMode, formData, handleChange, handleSubmit,
         showPassword, togglePassword,
-        modal, closeModal, setModal, 
+        modal, closeModal, setModal,
         loading,
         handleSocialLogin,
         showOtpModal, otpCode, handleOtpChange, verifyOtp, timer, canResend, setShowOtpModal,
@@ -23,7 +21,6 @@ const AuthPage: React.FC = () => {
         sendRecoveryCode, verifyRecoveryOtp, resetPasswordFinal
     } = useAuth();
 
-    // Función para manejar el cambio de contraseña con validación local y ejecución real
     const handlePasswordResetClick = async () => {
         // 1. Validar longitud (MÍNIMO 6 CARACTERES)
         if (newPassword.length < 6) {
@@ -35,13 +32,12 @@ const AuthPage: React.FC = () => {
                     message: 'La contraseña es demasiado corta. Debe tener al menos 6 caracteres.'
                 });
             } else {
-                alert("La contraseña debe tener al menos 6 caracteres."); 
+                alert("La contraseña debe tener al menos 6 caracteres.");
             }
             return;
         }
 
         // 2. Si es válida, ejecutamos la lógica real del hook
-        // Usamos await por si resetPasswordFinal es asíncrona (llamada a Supabase)
         await resetPasswordFinal();
     };
 
@@ -351,7 +347,7 @@ const AuthPage: React.FC = () => {
                                 <button
                                     className={styles.button}
                                     onClick={handlePasswordResetClick}
-                                    disabled={loading} 
+                                    disabled={loading}
                                 >
                                     {loading ? 'Actualizando...' : 'Cambiar Contraseña'}
                                 </button>

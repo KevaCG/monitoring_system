@@ -437,7 +437,6 @@
 .otpInput {
     font-size: 2rem;
     letter-spacing: 10px;
-    /* Separa los números */
     text-align: center;
     padding: 10px;
     border: 2px solid var(--border-color);

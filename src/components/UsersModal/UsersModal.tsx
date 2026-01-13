@@ -40,22 +40,16 @@ export const UsersModal: React.FC<UsersModalProps> = ({ onClose }) => {
         }
         setLoading(false);
     };
-
-    // --- NUEVA LÓGICA: Igual que en tu Sidebar ---
-    // Si el usuario no tiene nombre en la BD, tomamos lo que está antes del @ en el email
     const getDisplayName = (user: UserProfile) => {
         if (user.nombre && user.nombre.trim() !== "") return user.nombre;
 
-        // Lógica de respaldo de la Sidebar:
         if (user.email) {
             const nameFromEmail = user.email.split('@')[0];
-            // Capitalizar la primera letra (ej: "kcstrillon" -> "Kcastrillon")
             return nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
         }
         return "Usuario";
     };
 
-    // Helpers visuales que usan el nombre calculado
     const getInitials = (displayName: string) => {
         return displayName.substring(0, 2).toUpperCase();
     };
@@ -154,7 +148,6 @@ export const UsersModal: React.FC<UsersModalProps> = ({ onClose }) => {
                                     <tr><td colSpan={4} className={styles.emptyCell}>No se encontraron usuarios.</td></tr>
                                 ) : (
                                     filteredUsers.map((user) => {
-                                        // Calculamos el nombre UNA vez por fila para usarlo en avatar y texto
                                         const displayName = getDisplayName(user);
 
                                         return (
@@ -168,7 +161,6 @@ export const UsersModal: React.FC<UsersModalProps> = ({ onClose }) => {
                                                             {getInitials(displayName)}
                                                         </div>
                                                         <div className={styles.userDetails}>
-                                                            {/* Aquí mostramos el nombre calculado o el fallback */}
                                                             <span className={styles.userName}>{displayName}</span>
                                                             <span className={styles.userEmail}>{user.email}</span>
                                                         </div>
