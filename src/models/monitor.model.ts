@@ -1,6 +1,7 @@
 
 export interface FilterContextType {
-    type: 'global' | 'project' | 'client' | 'canal' | 'flow' | 'server' | 'status' | 'backup_detail';
+    // Agrega 'server_monitor' al final de la lista
+    type: 'global' | 'status' | 'project' | 'client' | 'canal' | 'flow' | 'server' | 'backup_detail' | 'server_monitor' | 'k8s_monitor';
     value: string;
 }
 

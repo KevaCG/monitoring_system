@@ -6,6 +6,10 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { FilterContextType } from '../../../models/monitor.model';
 
+// 1. IMPORTAR COMPONENTE DE MONITOREO
+// Ajusta la ruta si tu componente ServerMonitor está en otra carpeta
+import { ServerMonitor } from '../../../views/Dashboard/ServerMonitor/ServerMonitor';
+
 interface DashboardUIProps {
     filterContext: FilterContextType;
     data: any[];
@@ -29,7 +33,6 @@ const getErrorDetails = (msg: string) => {
 
 // --- UTILS FORMATO ---
 
-// 1. Duración amigable (segundos/minutos)
 const formatDuration = (ms: number) => {
     if (!ms) return '0s';
     const seconds = Math.floor(ms / 1000);
@@ -38,7 +41,6 @@ const formatDuration = (ms: number) => {
     return m > 0 ? `${m}m ${s}s` : `${s}s`;
 };
 
-// 2. Obtener solo FECHA en UTC-5
 const getExcelDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('es-CO', {
         timeZone: 'America/Bogota',
@@ -46,7 +48,6 @@ const getExcelDate = (dateStr: string) => {
     });
 };
 
-// 3. Obtener solo HORA en UTC-5 (Formato 24h)
 const getExcelTime = (dateObj: Date) => {
     return dateObj.toLocaleTimeString('es-CO', {
         timeZone: 'America/Bogota',
@@ -65,6 +66,18 @@ const DashboardUI: React.FC<DashboardUIProps> = ({
     setSelectedErrorToEdit,
     selectedRun
 }) => {
+
+    // ---------------------------------------------------------
+    // 2. INTERCEPTAR PARA MOSTRAR MONITOR ZABBIX
+    // ---------------------------------------------------------
+    if (filterContext.value === 'ServerMonitor') {
+        return <ServerMonitor />;
+    }
+
+    // ---------------------------------------------------------
+    // VISTA NORMAL (CYPRESS)
+    // ---------------------------------------------------------
+
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [dateFilter, setDateFilter] = useState('');

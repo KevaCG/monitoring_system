@@ -1,22 +1,73 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+
+// --- VISTAS ---
 import StatusPage from './Status/StatusPage';
 import ServerDiskView from './Disks/ServerDiskView';
-import DashboardUI from './Overview/DashboardOverview';
+import DashboardUI from './Overview/DashboardOverview'; // Vista Detallada (Tabla, Gráficas específicas)
+import { GlobalOverview } from './Overview/GlobalOverview'; // Torre de Control
+import { ServerMonitor } from './ServerMonitor/ServerMonitor'; // Zabbix
+import { KubernetesMonitor } from './KubernetesMonitor/KubernetesMonitor'; // <--- NUEVO KUBERNETES
+
+// --- MODALES Y TIPOS ---
 import CorrectionModal from './Overview/CorrectionModal';
 import type { FilterContextType } from '../../models/monitor.model';
 
 interface MainContentProps {
     filterContext: FilterContextType;
+    // Prop para permitir navegación desde el GlobalOverview
+    onFilterChange: (newFilter: FilterContextType) => void;
 }
 
-const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
+const MainContent: React.FC<MainContentProps> = ({ filterContext, onFilterChange }) => {
 
-    if (filterContext.type === 'server') return <ServerDiskView serverIp={filterContext.value} />;
-    if (filterContext.type === 'status') return <StatusPage />;
+    // --------------------------------------------------------
+    // 1. ROUTER DE VISTAS PRINCIPALES
+    // --------------------------------------------------------
+
+    // A) Vista de Discos Específicos
+    if (filterContext.type === 'server') {
+        return <ServerDiskView serverIp={filterContext.value} />;
+    }
+
+    // B) Estatus Operacional
+    if (filterContext.type === 'status') {
+        return <StatusPage />;
+    }
+
+    // C) Monitoreo Zabbix (CPU/RAM)
+    if (filterContext.type === 'server_monitor' || filterContext.value === 'ServerMonitor') {
+        return <ServerMonitor />;
+    }
+
+    // D) Monitoreo Kubernetes (NUEVO)
+    if (filterContext.type === 'k8s_monitor' || filterContext.value === 'KubernetesMonitor') {
+        return <KubernetesMonitor />;
+    }
+
+    // E) TORRE DE CONTROL (Global Dashboard)
+    // Si estamos en la raíz "Dashboard", mostramos el resumen ejecutivo
+    if (filterContext.type === 'global' && filterContext.value === 'Dashboard') {
+        return (
+            <GlobalOverview
+                onNavigate={(view) => {
+                    // Lógica de navegación desde las tarjetas del resumen
+                    if (view === 'ServerMonitor') onFilterChange({ type: 'server_monitor', value: 'ServerMonitor' });
+                    else if (view === 'KubernetesMonitor') onFilterChange({ type: 'k8s_monitor', value: 'KubernetesMonitor' });
+                    else if (view === 'Backup') onFilterChange({ type: 'project', value: 'Backup' });
+                    else if (view === 'Discos') onFilterChange({ type: 'server', value: '10.94.96.106' }); // O abrir menú discos
+                    else if (view === 'Dashboard') onFilterChange({ type: 'global', value: 'TestsList' }); // Ver lista detallada
+                }}
+            />
+        );
+    }
+
+    // --------------------------------------------------------
+    // 2. LÓGICA DE VISTA DETALLADA (DashboardUI - Cypress/Backups/Logs)
+    // --------------------------------------------------------
 
     const [data, setData] = useState<any[]>([]);
-    const [rawDataGlobal, setRawDataGlobal] = useState<any[]>([]);
+    const [, setRawDataGlobal] = useState<any[]>([]);
     const [stats, setStats] = useState({ total: 0, ok: 0, error: 0, avgTimeLast4: '0s' });
     const [chartData, setChartData] = useState<any[]>([]);
     const [barData, setBarData] = useState<any[]>([]);
@@ -27,6 +78,7 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
     const [correctionComment, setCorrectionComment] = useState('');
     const [isSavingCorrection, setIsSavingCorrection] = useState(false);
 
+    // Procesamiento de estadísticas
     const processStats = (allData: any[]) => {
         let filtered = allData.map(d => {
             let displayStatus = d.estado;
@@ -36,11 +88,15 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
             return { ...d, displayStatus };
         });
 
+        // Aplicar filtros según el contexto
         switch (filterContext.type) {
             case 'project': filtered = filtered.filter((d) => d.proyecto === filterContext.value); break;
             case 'client': filtered = filtered.filter((d) => d.cliente === filterContext.value); break;
             case 'canal': filtered = filtered.filter((d) => d.canal === filterContext.value); break;
             case 'flow': filtered = filtered.filter((d) => d.sistema === filterContext.value); break;
+            case 'backup_detail':
+                filtered = filtered.filter((d) => d.sistema === filterContext.value);
+                break;
             default: break;
         }
 
@@ -85,22 +141,37 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
     };
 
     const fetchData = async () => {
+        // Determinamos qué tabla consultar
+        let tableName = 'monitoreos'; // Por defecto Cypress
+
+        if (filterContext.value === 'Backup' || filterContext.type === 'backup_detail') {
+            tableName = 'backup_history';
+        }
+
         const { data: result, error } = await supabase
-            .from('monitoreos')
-            .select('*, estado_correccion, comentario_correccion')
+            .from(tableName)
+            .select(tableName === 'monitoreos' ? '*, estado_correccion, comentario_correccion' : '*')
             .order('created_at', { ascending: false });
 
         if (error || !result) return;
 
-        setRawDataGlobal(result);
-        processStats(result);
+        // Normalización básica
+        // Usamos (r: any) para evitar errores de TS al mezclar tipos de tablas
+        const normalizedResult = result.map((r: any) => ({
+            ...r,
+            sistema: r.sistema || r.db_name,
+            // Lógica unificada de estado
+            estado: r.estado ? r.estado : (r.status === 'EXITOSO' ? 'OK' : 'ERROR'),
+            duracion_ms: r.duracion_ms || 0
+        }));
+
+        setRawDataGlobal(normalizedResult);
+        processStats(normalizedResult);
     };
 
     const handleCorrection = async () => {
         if (!selectedErrorToEdit || isSavingCorrection) return;
-
         setIsSavingCorrection(true);
-
         const { error } = await supabase
             .from('monitoreos')
             .update({
@@ -108,12 +179,10 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
                 comentario_correccion: correctionComment,
             })
             .eq('id', selectedErrorToEdit.id);
-
         setIsSavingCorrection(false);
-
         if (error) {
-            console.error("Error al actualizar corrección:", error);
-            alert("No se pudo guardar la corrección.");
+            console.error("Error updating:", error);
+            alert("Error al guardar.");
         } else {
             fetchData();
             setSelectedErrorToEdit(null);
@@ -122,33 +191,20 @@ const MainContent: React.FC<MainContentProps> = ({ filterContext }) => {
     };
 
     useEffect(() => {
-        if (filterContext.type !== 'server' && filterContext.type !== 'status') {
+        // Solo hacemos fetch si NO estamos en una vista especial
+        const isSpecialView = ['server', 'status', 'server_monitor', 'k8s_monitor'].includes(filterContext.type) ||
+            (filterContext.type === 'global' && filterContext.value === 'Dashboard');
+
+        if (!isSpecialView) {
             fetchData();
         }
 
         const channel = supabase.channel('dashboard-main-realtime')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'monitoreos'
-                },
-                (payload) => {
-                    console.log('Cambio en tiempo real detectado:', payload);
-                    fetchData();
-                }
-            )
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'monitoreos' }, () => fetchData())
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
-    }, [filterContext.type]);
-
-    useEffect(() => {
-        if (rawDataGlobal.length > 0) {
-            processStats(rawDataGlobal);
-        }
-    }, [filterContext, rawDataGlobal]);
+    }, [filterContext]);
 
     return (
         <>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar/Sidebar';
 import RightPanel from './RightPanel/RightPanel';
-import MainContent from '../DashboardContent';
+import MainContent from '../DashboardContent'; // Tu Router inteligente
 import { UsersModal } from '../../../components/UsersModal/UsersModal';
 import styles from './DashboardLayout.module.css';
 import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from 'lucide-react';
@@ -62,7 +62,11 @@ const DashboardLayout: React.FC = () => {
                     {(filterContext.value === 'Backup' || filterContext.type === 'backup_detail') ? (
                         <BackupDashboard filterContext={filterContext} />
                     ) : (
-                        <MainContent filterContext={filterContext} />
+                        // 👇 AQUÍ ESTÁ EL CAMBIO IMPORTANTE 👇
+                        <MainContent
+                            filterContext={filterContext}
+                            onFilterChange={setFilterContext} // <--- ¡ESTO ES LO QUE FALTABA!
+                        />
                     )}
                 </div>
             </main>

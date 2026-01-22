@@ -1,0 +1,718 @@
+/* =========================================
+   1. LAYOUT GENERAL
+   ========================================= */
+.container {
+    padding: 32px;
+    background-color: #F8FAFC;
+    /* Fondo gris moderno estilo TrafficTrace */
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #1e293b;
+    box-sizing: border-box;
+}
+
+/* =========================================
+   2. HEADER
+   ========================================= */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    color: #64748b;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.headerActions {
+    display: flex;
+    gap: 12px;
+}
+
+.datePill {
+    background: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e2e8f0;
+}
+
+/* =========================================
+   3. KPI GRID (Tarjetas Superiores)
+   ========================================= */
+.kpiGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+    border: 1px solid #f1f5f9;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.06);
+    border-color: #e2e8f0;
+}
+
+/* Elementos Internos KPI */
+.cardTop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.iconCircle {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blue {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.green {
+    background: #ecfdf5;
+    color: #10b981;
+}
+
+.purple {
+    background: #f5f3ff;
+    color: #8b5cf6;
+}
+
+.gray {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+.cardLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.cardMain {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.bigValue {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.unit {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.cardFooter {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.textGreen {
+    color: #10b981;
+}
+
+.textRed {
+    color: #ef4444;
+}
+
+.textGray {
+    color: #94a3b8;
+}
+
+/* =========================================
+   4. SECCIÓN PRINCIPAL (Gráficas)
+   ========================================= */
+.mainSection {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* 66% Chart, 33% Gauge */
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.chartCard,
+.scoreCard {
+    cursor: default;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.cardHeader h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+/* Icono de Ayuda (?) */
+.helpIcon {
+    margin-left: 8px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.helpIcon:hover {
+    color: #6366f1;
+    background: #e0e7ff;
+    border-radius: 50%;
+}
+
+.legend {
+    display: flex;
+    gap: 16px;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.dotBlue {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3b82f6;
+}
+
+.dotPurple {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #8b5cf6;
+}
+
+/* Gauge / Score Circular */
+.gaugeContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.gaugeChart {
+    width: 220px;
+    height: 220px;
+    position: relative;
+}
+
+.gaugeCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.scoreNum {
+    display: block;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.scoreText {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.scoreSummary {
+    text-align: center;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.scoreSummary p {
+    margin: 0 0 15px 0;
+    font-size: 0.95rem;
+    color: #475569;
+}
+
+.miniBar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: #64748b;
+    width: 100%;
+    font-weight: 600;
+}
+
+.barBg {
+    flex: 1;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.barFill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* =========================================
+   5. ALERTAS LIST (Estilo Vertical)
+   ========================================= */
+.sectionHeader {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.alertsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.alertCard {
+    background: white;
+    padding: 20px 24px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Línea indicadora lateral */
+.alertCard::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+}
+
+.alertCard.critical::before {
+    background-color: #ef4444;
+}
+
+/* Rojo */
+.alertCard.warning::before {
+    background-color: #f59e0b;
+}
+
+/* Naranja */
+
+.alertCard:hover {
+    transform: translateX(4px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+}
+
+.alertIconBox {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.bgRed {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.bgOrange {
+    background: #ffedd5;
+    color: #f59e0b;
+}
+
+.alertContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+}
+
+.alertHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alertTypeLabel {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #f1f5f9;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.alertTime {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.alertMsg {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.emptyAlert {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* =========================================
+   6. MODALES (Detalle, Score y Raw)
+   ========================================= */
+
+/* Overlay común */
+.modalOverlay,
+.scoreModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    /* Fondo oscuro semitransparente con blur */
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+/* --- Modal de Alerta --- */
+.modalContent {
+    background: white;
+    width: 550px;
+    max-width: 95%;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 20px;
+}
+
+.modalIconBig {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.modalTitle {
+    margin: 0 0 4px 0;
+    font-size: 1.3rem;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.modalDate {
+    display: flex;
+    align-items: center;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+/* Tarjetas de estadísticas dentro del modal */
+.statsRow {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.statBox {
+    flex: 1;
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.statLabel {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+}
+
+.statValue {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* Mensaje Crudo (Raw) */
+.rawMessage {
+    background: #1e293b;
+    color: #f1f5f9;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: 'Menlo', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-top: 10px;
+    word-break: break-word;
+}
+
+.rawMessage strong {
+    display: block;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.rawMessage p {
+    margin: 0;
+}
+
+.modalBody {
+    font-size: 1rem;
+    color: #334155;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.closeBtn {
+    margin-top: 24px;
+    width: 100%;
+    padding: 12px;
+    background: #0f172a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.closeBtn:hover {
+    background: #334155;
+}
+
+/* --- Modal de Score (Nuevo) --- */
+.scoreModal {
+    background: white;
+    width: 400px;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.scoreModal h3 {
+    margin: 0 0 16px 0;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+}
+
+.scoreRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px dashed #e2e8f0;
+    font-size: 0.95rem;
+}
+
+.scoreRow:last-child {
+    border-bottom: none;
+}
+
+.scoreLabel {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.scoreValue {
+    font-weight: 700;
+    color: #ef4444;
+}
+
+.scoreValue.base {
+    color: #22c55e;
+}
+
+.closeScoreBtn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.closeScoreBtn:hover {
+    background: #e2e8f0;
+}
+
+/* =========================================
+   7. ANIMACIONES Y RESPONSIVE
+   ========================================= */
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 1024px) {
+    .mainSection {
+        grid-template-columns: 1fr;
+    }
+
+    .kpiGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .kpiGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .alertHeaderRow {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .modalContent {
+        padding: 20px;
+    }
+
+    .statsRow {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

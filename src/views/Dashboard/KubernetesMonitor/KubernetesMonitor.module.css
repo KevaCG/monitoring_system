@@ -1,0 +1,253 @@
+.container {
+    padding: 32px;
+    background: #F8FAFC;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.subtitle {
+    color: #64748b;
+    margin: 4px 0 0 0;
+    font-size: 0.9rem;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.lastUpdate {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.refreshBtn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #475569;
+}
+
+.refreshBtn:hover {
+    background: #f1f5f9;
+    color: #0ea5e9;
+    border-color: #0ea5e9;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Stats Row */
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.statCard {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.statLabel {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.statValue {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 4px;
+}
+
+/* Table Card */
+.tableCard {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+}
+
+/* TOOLBAR (Donde están los filtros) */
+.toolbar {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.searchBox,
+.filterBox {
+    position: relative;
+    width: 300px;
+}
+
+.searchIcon,
+.filterIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.searchInput,
+.namespaceSelect {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    outline: none;
+    font-size: 0.9rem;
+    color: #334155;
+    background: white;
+    height: 40px;
+    /* Altura fija para que coincidan */
+    appearance: none;
+    /* Reset para el select */
+}
+
+.searchInput:focus,
+.namespaceSelect:focus {
+    border-color: #0ea5e9;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    padding: 16px 24px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 0.9rem;
+}
+
+.rowError {
+    background: #fef2f2;
+}
+
+/* Elements */
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badgeSuccess {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badgeWarning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badgeError {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.podName {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.podIcon {
+    color: #0ea5e9;
+}
+
+.namespaceTag {
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #475569;
+    font-family: monospace;
+}
+
+.mono {
+    font-family: monospace;
+    color: #64748b;
+}
+
+.textRed {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.textOrange {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.textGray {
+    color: #cbd5e1;
+}
+
+.textSm {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.emptyState {
+    padding: 40px;
+    text-align: center;
+    color: #94a3b8;
+    font-weight: 500;
+}

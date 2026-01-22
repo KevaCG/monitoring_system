@@ -1,10 +1,12 @@
 import { useState } from 'react';
 
+const SESSION_ID = 'session-' + Math.random().toString(36).substr(2, 9);
+
 export const useN8N = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const WEBHOOK_URL = 'http://localhost:5678/webhook-test/chat';
+    const WEBHOOK_URL = 'http://localhost:5679/webhook-test/ops-chat-input';
 
     const sendMessage = async (message: string) => {
         setLoading(true);
@@ -16,7 +18,10 @@ export const useN8N = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ chatInput: message }),
+                body: JSON.stringify({
+                    chatInput: message,
+                    sessionId: SESSION_ID
+                }),
             });
 
             if (!response.ok) {
@@ -24,7 +29,9 @@ export const useN8N = () => {
             }
 
             const data = await response.json();
-            return data.output || data.text || data.message || JSON.stringify(data);
+
+            // Priorizamos 'text' porque así lo configuramos en el nodo "Respond to Webhook"
+            return data.text || data.output || JSON.stringify(data);
 
         } catch (err) {
             console.error("Error conectando con n8n:", err);

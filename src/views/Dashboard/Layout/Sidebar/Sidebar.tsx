@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     LayoutDashboard, Folder, ChevronDown, ChevronRight, LogOut,
     MessageSquare, Briefcase, Users, Layers, HardDrive, Activity,
-    Database, Server // <--- Importamos iconos necesarios
+    Database, Server, Cpu, Box // <--- 1. Importamos Box para el icono de K8s
 } from 'lucide-react';
 import { supabase } from '../../../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
@@ -175,7 +175,6 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
     // --- Lógica para cargar lista de Backups ---
     const fetchBackupList = async () => {
         try {
-            // Traemos los últimos registros para encontrar las bases de datos activas
             const { data } = await supabase
                 .from('backup_history')
                 .select('server_name, db_name, status, created_at')
@@ -219,7 +218,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
         fetchOperationalStatus();
         fetchBackupList();
 
-        // 3. Suscripción Realtime para actualizar la bolita al instante
+        // 3. Suscripción Realtime
         const channel = supabase
             .channel('sidebar-health-update')
             .on(
@@ -351,7 +350,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
                             </div>
                         </div>
 
-                        {/* --- SECCIÓN DE BACKUPS MEJORADA CON SUBMENÚ --- */}
+                        {/* --- SECCIÓN DE BACKUPS --- */}
                         <div style={{ marginTop: '10px', borderTop: '1px solid #334155', paddingTop: '10px' }}>
                             <SidebarItem
                                 icon={Database}
@@ -367,10 +366,8 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
                                 iconColor="#3b82f6"
                             />
 
-                            {/* Submenú de Bases de Datos */}
                             <div className={`${styles.subMenuWrapper} ${isExp('Backups') ? styles.subMenuOpen : ''}`}>
                                 <div className={styles.subMenuContainer}>
-                                    {/* Opción explícita para Dashboard Global */}
                                     <SubMenuItem
                                         icon={LayoutDashboard}
                                         label="Vista Global"
@@ -378,16 +375,13 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
                                         onClick={() => onSelectFilter({ type: 'project', value: 'Backup' })}
                                         iconColor="#3b82f6"
                                     />
-
-                                    {/* Lista dinámica de BDs */}
                                     {backupEntities.map((entity) => (
                                         <SubMenuItem
                                             key={entity.key}
                                             icon={Server}
-                                            label={entity.label} // Nombre de la DB
+                                            label={entity.label}
                                             isActive={filterContext.type === 'backup_detail' && filterContext.value === entity.key}
                                             onClick={() => onSelectFilter({ type: 'backup_detail', value: entity.key })}
-                                            // Color del icono según estado (Verde=OK, Rojo=Fail)
                                             iconColor={entity.status && entity.status.includes('FAIL') ? '#ef4444' : '#10b981'}
                                         />
                                     ))}
@@ -415,6 +409,26 @@ const Sidebar: React.FC<SidebarProps> = ({ filterContext, onSelectFilter, onOpen
                                     <SubMenuItem icon={HardDrive} label="10.94.84.158" isActive={filterContext.type === 'server' && filterContext.value === '10.94.84.158'} onClick={() => onSelectFilter({ type: 'server', value: '10.94.84.158' })} />
                                 </div>
                             </div>
+                        </div>
+
+                        {/* --- MONITOREO INFRAESTRUCTURA (Zabbix y K8s) --- */}
+                        <div style={{ marginTop: '10px', borderTop: '1px solid #334155', paddingTop: '10px' }}>
+                            {/* Zabbix */}
+                            <SidebarItem
+                                icon={Cpu}
+                                label="Monitoreo Zabbix"
+                                isActive={filterContext.value === 'ServerMonitor'}
+                                onClick={() => onSelectFilter({ type: 'server_monitor', value: 'ServerMonitor' })}
+                            />
+
+                            {/* 2. Kubernetes (NUEVO ITEM) */}
+                            <SidebarItem
+                                icon={Box}
+                                label="Kubernetes"
+                                isActive={filterContext.value === 'KubernetesMonitor'}
+                                onClick={() => onSelectFilter({ type: 'k8s_monitor', value: 'KubernetesMonitor' })}
+                                iconColor="#0ea5e9"
+                            />
                         </div>
 
                     </div>
